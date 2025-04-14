@@ -1,0 +1,60 @@
+﻿@model CategoryViewModel
+
+<h2>Add Category</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div> 
+}
+
+
+
+<form asp-action="SaveNew" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Icon"></label>
+        <input asp-for="Icon" class="form-control" type="file"/>
+        <span asp-validation-for="Icon" class="text-danger"></span>
+    </div>
+
+    <h4>Features</h4>
+    <div id="featuresContainer">
+        @for (int i = 0; i < Model.Features.Count; i++)
+        {
+            <div class="feature-item">
+                <input asp-for="Features[i].Name" class="form-control" />
+                <span asp-validation-for="Features[i].Name" class="text-danger"></span>
+            </div>
+        }
+    </div>
+
+    <button type="button" id="addFeature" class="btn btn-secondary">Add Feature</button>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+<a href="/Category/Index" class="btn btn-success">Back to List</a>
+@section Scripts {
+    <script>
+        document.getElementById("addFeature").addEventListener("click", function () {
+            var container = document.getElementById("featuresContainer");
+            var index = container.children.length;
+            var featureHtml = `<div class="feature-item">
+                <input name="Features[${index}].Name" class="form-control" />
+            </div>`;
+            container.insertAdjacentHTML("beforeend", featureHtml);
+        });
+    </script>
+}
+
+
+

@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Primary Colors with Variants */
+  --vr-primary: #2A9D8F;
+  --vr-primary-light: #4DB5A9;
+  --vr-primary-dark: #1F756A;
+  --vr-primary-bg: rgba(42, 157, 143, 0.1);
+
+  --vr-secondary: #264653;
+  --vr-secondary-light: #3A5A68;
+  --vr-secondary-dark: #1B3340;
+  --vr-secondary-bg: rgba(38, 70, 83, 0.1);
+
+  /* Accent Colors with Variants */
+  --vr-accent: #E9C46A;
+  --vr-accent-light: #F0D38A;
+  --vr-accent-dark: #D4B054;
+  --vr-accent-bg: rgba(233, 196, 106, 0.1);
+
+  /* Additional Theme Colors */
+  --vr-coral: #F4A261;
+  --vr-coral-light: #F6B787;
+  --vr-coral-dark: #E88B3D;
+  
+  --vr-terra: #E76F51;
+  --vr-terra-light: #EC8D75;
+  --vr-terra-dark: #D35335;
+
+  /* Extended Neutral Palette */
+  --vr-dark: #1A1A1A;
+  --vr-gray-900: #2D2D2D;
+  --vr-gray-800: #3D3D3D;
+  --vr-gray-700: #4D4D4D;
+  --vr-gray-600: #5D5D5D;
+  --vr-gray-500: #707070;
+  --vr-gray-400: #909090;
+  --vr-gray-300: #B3B3B3;
+  --vr-gray-200: #D4D4D4;
+  --vr-gray-100: #F5F5F5;
+  --vr-light: #FFFFFF;
+
+  /* Status Colors with Variants */
+  --vr-success: #52B788;
+  --vr-success-light: #74C7A0;
+  --vr-success-dark: #3E9D6D;
+
+  --vr-warning: #F4A261;
+  --vr-warning-light: #F6B787;
+  --vr-warning-dark: #E88B3D;
+
+  --vr-error: #E76F51;
+  --vr-error-light: #EC8D75;
+  --vr-error-dark: #D35335;
+
+  /* Typography - Updated for English */
+  --vr-font-main: 'Inter', sans-serif;          /* Clean, highly legible font for body text */
+  --vr-font-headers: 'Plus Jakarta Sans', sans-serif;  /* Modern font for headers */
+  --vr-font-special: 'Urbanist', sans-serif;    /* For special text elements */
+
+  /* Font Weights */
+  --vr-font-light: 300;
+  --vr-font-regular: 400;
+  --vr-font-medium: 500;
+  --vr-font-semibold: 600;
+  --vr-font-bold: 700;
+
+  /* Font Sizes - Adjusted for better English readability */
+  --vr-text-xs: 0.75rem;      /* 12px */
+  --vr-text-sm: 0.875rem;     /* 14px */
+  --vr-text-base: 1rem;       /* 16px */
+  --vr-text-lg: 1.125rem;     /* 18px */
+  --vr-text-xl: 1.375rem;     /* 22px */
+  --vr-text-2xl: 1.75rem;     /* 28px */
+  --vr-text-3xl: 2.25rem;     /* 36px */
+  --vr-text-4xl: 3rem;        /* 48px */
+
+  /* Line Heights - Optimized for English */
+  --vr-leading-none: 1;
+  --vr-leading-tight: 1.2;
+  --vr-leading-normal: 1.5;
+  --vr-leading-relaxed: 1.625;
+  --vr-leading-loose: 2;
+
+  /* Spacing */
+  --vr-spacing-xs: 0.25rem;
+  --vr-spacing-sm: 0.5rem;
+  --vr-spacing-md: 1rem;
+  --vr-spacing-lg: 1.5rem;
+  --vr-spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --vr-radius-sm: 4px;
+  --vr-radius-md: 8px;
+  --vr-radius-lg: 16px;
+  
+  /* Shadows with More Variants */
+  --vr-shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --vr-shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --vr-shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --vr-shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --vr-shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+  --vr-shadow-inner: inset 0 2px 4px rgba(0,0,0,0.05);
+
+  /* Transitions */
+  --vr-transition-fast: 150ms ease;
+  --vr-transition-normal: 250ms ease;
+  --vr-transition-slow: 350ms ease;
+
+  /* Z-index Scale */
+  --vr-z-0: 0;
+  --vr-z-10: 10;
+  --vr-z-20: 20;
+  --vr-z-30: 30;
+  --vr-z-40: 40;
+  --vr-z-50: 50;
+  --vr-z-modal: 999;
+  --vr-z-tooltip: 1000;
+
+  /* Letter Spacing */
+  --vr-tracking-tight: -0.025em;
+  --vr-tracking-normal: 0;
+  --vr-tracking-wide: 0.025em;
+  --vr-tracking-wider: 0.05em;
+
+  /* Toast Specific Variables */
+  --vr-toast-bg: var(--vr-light);
+  --vr-toast-bg-dark: var(--vr-gray-800);
+  
+  /* Toast Type-Specific Colors */
+  --vr-toast-success-bg: rgba(40, 182, 44, 0.15);
+  --vr-toast-error-bg: rgba(220, 53, 69, 0.15);
+  --vr-toast-warning-bg: rgba(255, 193, 7, 0.15);
+  --vr-toast-info-bg: rgba(13, 202, 240, 0.15);
+  
+  /* Toast Progress Colors */
+  --vr-toast-progress-bg: rgba(0, 0, 0, 0.05);
+  --vr-toast-progress-opacity: 0.2;
+  
+  /* Toast Shadows & Borders */
+  --vr-toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --vr-toast-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --vr-toast-border-color: var(--vr-gray-100);
+
+  /* Toast Timing */
+  --vr-toast-duration-short: 3000ms;
+  --vr-toast-duration-normal: 4000ms;
+  --vr-toast-duration-long: 5000ms;
+  
+  /* Toast Animation */
+  --vr-toast-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --vr-toast-slide-distance: 120%;
+  
+  /* Toast Text Colors */
+  --vr-toast-success-text: var(--vr-success-dark);
+  --vr-toast-error-text: var(--vr-error-dark);
+  --vr-toast-warning-text: var(--vr-warning-dark);
+  --vr-toast-info-text: var(--vr-primary-dark);
+  
+  /* Toast Border Colors with Opacity */
+  --vr-toast-success-border: rgba(82, 183, 136, 0.2);
+  --vr-toast-error-border: rgba(231, 111, 81, 0.2);
+  --vr-toast-warning-border: rgba(244, 162, 97, 0.2);
+  --vr-toast-info-border: rgba(42, 157, 143, 0.2);
+  
+  /* Toast Progress Bar Colors */
+  --vr-toast-success-progress: var(--vr-success);
+  --vr-toast-error-progress: var(--vr-error);
+  --vr-toast-warning-progress: var(--vr-warning);
+  --vr-toast-info-progress: var(--vr-primary);
+  
+  /* Toast Icon Colors */
+  --vr-toast-success-icon: var(--vr-success);
+  --vr-toast-error-icon: var(--vr-error);
+  --vr-toast-warning-icon: var(--vr-warning);
+  --vr-toast-info-icon: var(--vr-primary);
+
+  /* Profile Specific Colors */
+  --vr-profile-header-bg: linear-gradient(135deg, var(--vr-primary) 0%, var(--vr-primary-dark) 100%);
+  --vr-profile-card-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+  --vr-profile-hover-shadow: 0 20px 40px rgba(50, 50, 93, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+  
+  /* Avatar Specific */
+  --vr-avatar-border: 4px solid var(--vr-light);
+  --vr-avatar-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  --vr-avatar-hover-shadow: 0 0 0 6px rgba(255, 255, 255, 0.3);
+  
+  /* Menu Item Transitions */
+  --vr-menu-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Typography Styles */
+body {
+  font-family: var(--vr-font-main);
+  font-size: var(--vr-text-base);
+  line-height: var(--vr-leading-normal);
+  letter-spacing: var(--vr-tracking-normal);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--vr-font-headers);
+  letter-spacing: var(--vr-tracking-tight);
+}
+
+.vr-special-text {
+  font-family: var(--vr-font-special);
+}

@@ -1,0 +1,88 @@
+@model mvc.Models.Review
+
+<div class="review-form-container card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Leave a Review</h5>
+    </div>
+    <div class="card-body">
+        <form asp-controller="Review" asp-action="Add" method="post">
+            <input type="hidden" asp-for="BusinessId" value="@ViewBag.BusinessId" />
+            
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Your Email</label>
+                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Rating" class="form-label">Rating</label>
+                <div class="rating-input">
+                    <div class="stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <input type="radio" id="rating-@i" name="Rating" value="@i" />
+                            <label for="rating-@i"><i class="fas fa-star"></i></label>
+                        }
+                    </div>
+                </div>
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Comment" class="form-label">Your Review</label>
+                <textarea asp-for="Comment" class="form-control" rows="4" placeholder="Write your review here..."></textarea>
+                <span asp-validation-for="Comment" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .rating-input {
+        margin-bottom: 10px;
+    }
+
+    .stars {
+        display: inline-flex;
+        flex-direction: row-reverse;
+    }
+
+    .stars input {
+        display: none;
+    }
+
+    .stars label {
+        cursor: pointer;
+        font-size: 1.5rem;
+        padding: 0 0.2rem;
+        color: #ddd;
+    }
+
+    .stars label:hover,
+    .stars label:hover ~ label,
+    .stars input:checked ~ label {
+        color: #ffc107;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingInputs = document.querySelectorAll('.stars input');
+        ratingInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                // Clear all stars
+                ratingInputs.forEach(inp => {
+                    inp.nextElementSibling.style.color = '#ddd';
+                });
+                
+                // Fill stars up to selected one
+                const selectedValue = this.value;
+                for (let i = 5; i >= selectedValue; i--) {
+                    document.getElementById(`rating-${i}`).nextElementSibling.style.color = '#ffc107';
+                }
+            });
+        });
+    });
+</script>

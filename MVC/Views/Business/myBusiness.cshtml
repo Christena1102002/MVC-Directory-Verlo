@@ -1,0 +1,669 @@
+@model List<mvc.Models.Business>
+@{
+    ViewData["Title"] = "My Businesses";
+    int currentPage = ViewBag.CurrentPage != null ? ViewBag.CurrentPage : 1;
+    int totalPages = ViewBag.TotalPages != null ? ViewBag.TotalPages : 1;
+    int itemsPerPage = ViewBag.ItemsPerPage != null ? ViewBag.ItemsPerPage : 12;
+    
+    // Store success/error messages in variables to use in JavaScript
+    var successMessage = TempData["Success"]?.ToString();
+    var errorMessage = TempData["Error"]?.ToString();
+}
+
+<!-- Add these hidden fields for JavaScript access -->
+<input type="hidden" name="userId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+<input type="hidden" name="totalPages" value="@totalPages" />
+<input type="hidden" name="currentPage" value="@currentPage" />
+<input type="hidden" name="successMessage" value="@successMessage" />
+<input type="hidden" name="errorMessage" value="@errorMessage" />
+
+<style>
+    /* Page Styles */
+    .my-businesses {
+        padding: 3rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-weight: 700;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    .page-description {
+        color: #6c757d;
+        max-width: 800px;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background-color: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .filter-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .search-box {
+        position: relative;
+        flex-grow: 1;
+    }
+
+        .search-box input {
+            border-radius: 30px;
+            padding-left: 2.8rem;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            height: 42px;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 0.95rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+    .filter-dropdown select {
+        border-radius: 30px;
+        border: 1px solid #e0e0e0;
+        padding: 0.5rem 1.5rem;
+        height: 42px;
+    }
+
+    /* Business Cards */
+    .business-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .business-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+    .business-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 1;
+    }
+
+    .status-active {
+        background-color: rgba(46, 204, 113, 0.9);
+        color: white;
+    }
+
+    .status-inactive {
+        background-color: rgba(231, 76, 60, 0.9);
+        color: white;
+    }
+
+    .business-package {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 1;
+    }
+
+    .package-premium {
+        background-color: rgba(241, 196, 15, 0.9);
+        color: #333;
+    }
+
+    .package-featured {
+        background-color: rgba(52, 152, 219, 0.9);
+        color: white;
+    }
+
+    .package-regular {
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+    }
+
+    .business-img {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .business-content {
+        padding: 1.5rem;
+    }
+
+    .business-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .business-name {
+        color: var(--secondary-color);
+    }
+
+    .business-rating {
+        color: #f1c40f;
+        font-size: 0.9rem;
+    }
+
+    .business-category {
+        color: #3498db;
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .business-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .subscription-date {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .business-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+    }
+
+    .view-btn {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .edit-btn {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .upgrade-btn {
+        background-color: #f1c40f;
+        color: #333;
+    }
+
+    .delete-btn {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+        .view-btn:hover, .edit-btn:hover, .upgrade-btn:hover, .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+        .no-results i {
+            font-size: 3rem;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+        }
+
+        .no-results h3 {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+    .add-business-btn {
+        background-color: #3498db;
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+        .add-business-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    /* Pagination styles */
+    .pagination-container {
+        position: relative;
+        padding: 20px 0;
+        min-height: 80px;
+        margin-top: 2rem;
+    }
+
+    .pagination-loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+
+        .pagination-loader.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .pagination-loader .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(52, 152, 219, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 0.8s linear infinite;
+        }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Main loading overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+        .loading-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(52, 152, 219, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<!-- Main loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
+
+<section class="my-businesses">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">My Businesses</h1>
+            <p class="page-description">Manage your business listings, monitor performance, and update information.</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control" id="businessSearch" placeholder="Search your businesses by name or category..." autocomplete="off">
+                </div>
+
+                <div class="filter-dropdown">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="filter-dropdown">
+                    <select class="form-select" id="packageFilter">
+                        <option value="all">All Packages</option>
+                        <option value="regular">Regular</option>
+                        <option value="premium">Premium</option>
+                        <option value="featured">Featured</option>
+                    </select>
+                </div>
+
+                <!-- New Category Filter Dropdown -->
+                <div class="filter-dropdown">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <a href="/Business/Add" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> Add New
+                </a>
+            </div>
+        </div>
+
+        <!-- Business Grid -->
+        <div class="business-grid" id="businessGrid">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var business in Model)
+                {
+                    <div class="business-card"
+                         data-name="@business.Name.ToLower()"
+                         data-category="@(business.Category?.Name?.ToLower() ?? "")"
+                         data-status="@(business.IsActive ? "active" : "inactive")"
+                         data-package="@(business.PackageId == 1 ? "regular" : business.PackageId == 2 ? "premium" : "featured")"
+                         data-category-id="@business.CategoryId">
+
+                        <div class="business-img" style="background-image: url('@(string.IsNullOrEmpty(business.MainImage) ? "/images/default-business.jpg" : business.MainImage)')">
+                            <div class="business-status @(business.IsActive ? "status-active" : "status-inactive")">
+                                @(business.IsActive ? "Active" : "Inactive")
+                            </div>
+
+                            <div class="business-package @(business.PackageId == 1 ? "package-regular" : business.PackageId == 2 ? "package-premium" : "package-featured")">
+                                @(business.PackageId == 1 ? "Regular" : business.PackageId == 2 ? "Premium" : "Featured")
+                            </div>
+                        </div>
+
+                        <div class="business-content">
+                            <div class="business-title">
+                                <h4 class="business-name">@business.Name</h4>
+                                <div class="business-rating">
+                                    @{
+                                        // Fix the ToString format issue by explicitly converting to double
+                                        double rating = business.Reviews != null && business.Reviews.Any() ?
+                                        Convert.ToDouble(business.Reviews.Average(r => r.Rating)) : 0.0;
+                                        // Now Format with 1 decimal place
+                                        string formattedRating = string.Format("{0:0.0}", rating);
+                                    }
+                                    <i class="fas fa-star"></i> @formattedRating
+                                </div>
+                            </div>
+
+                            <div class="business-category">
+                                <i class="@(string.IsNullOrEmpty(business.Category?.Icon) ? "fas fa-tag" : business.Category.Icon) me-1"></i>
+                                @(business.Category?.Name ?? "General")
+                            </div>
+
+                            <p class="business-description">@(business.Description?.Length > 100 ? business.Description.Substring(0, 100) + "..." : business.Description)</p>
+
+                            <div class="business-meta">
+                                <div class="subscription-date">
+                                    <i class="far fa-calendar-alt me-1"></i> Expires:
+                                    @(business.SubscriptionEndDate.HasValue
+                                        ? business.SubscriptionEndDate.Value.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture)
+                                        : "Not set")
+                                </div>
+
+                                <div class="business-actions">
+                                    <a href="/Business/GetBusinessById?id=@business.Id" class="action-btn view-btn" title="View details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/Business/Edit?id=@business.Id" class="action-btn edit-btn" title="Edit business">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @if (business.PackageId == 1)
+                                    {
+                                        <a href="/Package" class="action-btn upgrade-btn" title="Upgrade package">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </a>
+                                    }
+                                    <a href="javascript:void(0)" class="action-btn delete-btn"
+                                       title="Delete business"
+                                       onclick="confirmDelete(@business.Id, '@business.Name')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-results">
+                    <i class="fas fa-store-slash"></i>
+                    <h3>No businesses found</h3>
+                    <p>You haven't added any businesses yet. Start by adding your first business.</p>
+                    <a href="/Business/Add" class="add-business-btn">
+                        <i class="fas fa-plus-circle me-2"></i> Add Your Business
+                    </a>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model != null && Model.Any() && totalPages > 1)
+        {
+            <div class="pagination-container">
+                <div class="pagination-loader" id="paginationLoader">
+                    <div class="spinner"></div>
+                </div>
+
+                <nav aria-label="Business pagination">
+                    <ul class="pagination justify-content-center" id="businessPagination">
+                        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link" href="javascript:void(0)" data-page="@(currentPage - 1)" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        @{
+                            int startPage = Math.Max(1, currentPage - 2);
+                            int endPage = Math.Min(totalPages, startPage + 4);
+
+                            if (startPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)" data-page="1">1</a>
+                                </li>
+
+                                if (startPage > 2)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="javascript:void(0)">...</a>
+                                    </li>
+                                }
+                            }
+
+                            for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="javascript:void(0)" data-page="@i">@i</a>
+                                </li>
+                            }
+
+                            if (endPage < totalPages)
+                            {
+                                if (endPage < totalPages - 1)
+                                {
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="javascript:void(0)">...</a>
+                                    </li>
+                                }
+
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)" data-page="@totalPages">@totalPages</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                            <a class="page-link" href="javascript:void(0)" data-page="@(currentPage + 1)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <!-- Delete confirmation modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete "<span id="businessNameToDelete"></span>"? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use external script file to avoid Razor parsing issues -->
+    <script src="~/js/myBusiness.js"></script>
+    
+    <!-- Smaller inline script with proper syntax -->
+    <script>
+        // Global delete confirmation function
+        function confirmDelete(id, name) {
+            const nameElement = document.getElementById('businessNameToDelete');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            
+            if (nameElement) nameElement.textContent = name;
+            if (confirmBtn) confirmBtn.href = '/Business/Delete?id=' + id;
+            
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+        
+        // Notification handling - separated to avoid Razor parsing issues
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMsg = document.querySelector('input[name="successMessage"]')?.value;
+            const errorMsg = document.querySelector('input[name="errorMessage"]')?.value;
+            
+            if (successMsg && successMsg.trim() !== '') {
+                showNotification('success', successMsg);
+            }
+            
+            if (errorMsg && errorMsg.trim() !== '') {
+                showNotification('error', errorMsg);
+            }
+        });
+        
+        function showNotification(type, message) {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '1050';
+            
+            const toastElement = document.createElement('div');
+            toastElement.className = `toast show bg-${type === 'success' ? 'success' : 'danger'} text-white`;
+            toastElement.setAttribute('role', 'alert');
+            toastElement.setAttribute('aria-live', 'assertive');
+            toastElement.setAttribute('aria-atomic', 'true');
+            
+            toastElement.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${type === 'success' ? 'Success' : 'Error'}</strong>: ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toastElement);
+            document.body.appendChild(toastContainer);
+            
+            const bsToast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            bsToast.show();
+        }
+    </script>
+}

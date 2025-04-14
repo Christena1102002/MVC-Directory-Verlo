@@ -1,0 +1,183 @@
+@model IEnumerable<mvc.Models.Favorite>
+@{
+    ViewData["Title"] = "المفضلة";
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="mb-0">المفضلة</h1>
+            <p class="text-muted">جميع الأعمال المفضلة التي قمت بحفظها</p>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-heart text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="mb-3">لم تقم بإضافة أي أعمال إلى المفضلة بعد</h3>
+            <p class="text-muted mb-4">تصفح الأعمال وانقر على أيقونة القلب لإضافتها إلى المفضلة</p>
+            <a asp-controller="Business" asp-action="GetAll" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i> تصفح الأعمال
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var favorite in Model)
+            {
+                var business = favorite.Business;
+                
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            <img src="@(string.IsNullOrEmpty(business.MainImage) ? "/images/default-business.jpg" : business.MainImage)" 
+                                 class="card-img-top" alt="@business.Name" style="height: 200px; object-fit: cover;">
+                            <button class="btn btn-sm position-absolute top-0 end-0 m-2 remove-favorite" 
+                                    data-id="@business.Id" title="إزالة من المفضلة">
+                                <i class="fas fa-heart" style="color: #e74c3c; font-size: 1.5rem;"></i>
+                            </button>
+                            <div class="position-absolute bottom-0 start-0 p-3 w-100" style="background-image: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                                <span class="badge bg-primary">
+                                    <i class="@(business.Category?.Icon ?? "fas fa-store")"></i> @(business.Category?.Name ?? "عام")
+                                </span>
+                                <span class="badge @(business.IsActive ? "bg-success" : "bg-danger")">
+                                    @(business.IsActive ? "نشط" : "غير نشط")
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@business.Name</h5>
+                            <p class="card-text text-muted small">
+                                <i class="fas fa-map-marker-alt me-1"></i> @business.Address
+                            </p>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-2">
+                                    @{
+                                        double avgRating = business.GetAverageRating();
+                                        for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= Math.Floor(avgRating))
+                                            {
+                                                <i class="fas fa-star text-warning"></i>
+                                            }
+                                            else if (i - avgRating < 1 && i - avgRating > 0)
+                                            {
+                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star text-warning"></i>
+                                            }
+                                        }
+                                    }
+                                </div>
+                                <span class="text-muted small">@avgRating.ToString("0.0") (@(business.Reviews?.Count() ?? 0) تقييم)</span>
+                            </div>
+                            <p class="card-text small">@(business.Description?.Length > 100 ? business.Description.Substring(0, 100) + "..." : business.Description)</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-grid gap-2">
+                                <a asp-controller="Business" asp-action="GetBusinessById" asp-route-id="@business.Id" class="btn btn-outline-primary">
+                                    <i class="fas fa-info-circle me-1"></i> عرض التفاصيل
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <p class="text-muted">تم حفظ @Model.Count() عمل في المفضلة</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة أزرار إزالة من المفضلة
+            document.querySelectorAll('.remove-favorite').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const businessId = this.getAttribute('data-id');
+                    const card = this.closest('.col');
+                    
+                    if (confirm('هل تريد إزالة هذا العمل من المفضلة؟')) {
+                        fetch('/Favorite/ToggleFavorite', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ businessId: businessId })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // إزالة البطاقة مع تأثير انتقالي
+                                card.style.transition = 'all 0.3s ease';
+                                card.style.opacity = '0';
+                                card.style.transform = 'scale(0.8)';
+                                
+                                setTimeout(() => {
+                                    card.remove();
+                                    
+                                    // التحقق مما إذا كانت هناك أي بطاقات متبقية
+                                    if (document.querySelectorAll('.col').length === 0) {
+                                        // إعادة تحميل الصفحة لعرض حالة فارغة
+                                        window.location.reload();
+                                    }
+                                }, 300);
+                                
+                                // إظهار رسالة نجاح
+                                showToast('success', 'تمت إزالة العمل من المفضلة بنجاح');
+                            } else {
+                                showToast('error', data.message || 'حدث خطأ أثناء تحديث المفضلة');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showToast('error', 'حدث خطأ أثناء التواصل مع الخادم');
+                        });
+                    }
+                });
+            });
+            
+            // دالة إظهار التنبيهات
+            function showToast(type, message) {
+                const toastContainer = document.createElement('div');
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = 1080;
+                
+                const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+                
+                toastContainer.innerHTML = `
+                    <div class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(toastContainer);
+                
+                const toastElement = toastContainer.querySelector('.toast');
+                const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+                toast.show();
+                
+                toastElement.addEventListener('hidden.bs.toast', function() {
+                    document.body.removeChild(toastContainer);
+                });
+            }
+        });
+    </script>
+}

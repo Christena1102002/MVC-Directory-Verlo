@@ -1,0 +1,85 @@
+﻿@model EditCategoryViewModel
+
+<h2>Edit Category</h2>
+
+<form asp-action="SaveEdit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Icone"></label>
+        <input asp-for="Icone" class="form-control" />
+        <span asp-validation-for="Icone" class="text-danger"></span>
+    </div>
+
+    <h4>Features</h4>
+    <div id="featuresContainer">
+        @for (int i = 0; i < Model.Features.Count; i++)
+        {
+            <div class="feature-item" data-featureid="@Model.Features[i].FeatureID">
+                <input type="hidden" asp-for="Features[i].FeatureID" />
+                <input asp-for="Features[i].NameFeature" class="form-control" />
+
+
+                <button type="button" class="btn btn-danger btn-sm remove-feature" data-index="@i">Delete</button>
+            </div>
+        }
+    </div>
+
+    <button type="button" id="addFeature" class="btn btn-secondary">Add New Feature</button>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<a href="/Category/Index" class="btn btn-success">Back to List</a>
+
+@section Scripts {
+    <script>
+        document.getElementById("addFeature").addEventListener("click", function () {
+            var container = document.getElementById("featuresContainer");
+            var index = container.children.length;
+
+            var featureHtml = `<div class="feature-item" data-featureid="0"> <!-- FeatureID صفر للخصائص الجديدة -->
+                <input name="Features[${index}].FeatureID" type="hidden" value="0" />
+                <input name="Features[${index}].NameFeature" class="form-control" />
+                <button type="button" class="btn btn-danger btn-sm remove-feature" data-index="${index}">Delete</button>
+            </div>`;
+            container.insertAdjacentHTML("beforeend", featureHtml);
+        });
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("remove-feature")) {
+                var featureItem = event.target.parentElement;
+                var featureId = featureItem.getAttribute("data-featureid");
+
+                console.log("Deleting feature with ID: ", featureId);
+
+                if (featureId == "0") {
+                    featureItem.remove();
+                } else {
+                    featureItem.remove();
+
+                    fetch(`/Category/DeleteFeature?categoryId=${@Model.Id}&featureId=${featureId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Feature deleted successfully");
+                        } else {
+                            console.error("Error deleting feature", response);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            }
+        });
+    </script>
+}

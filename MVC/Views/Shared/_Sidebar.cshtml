@@ -1,0 +1,49 @@
+﻿<style>
+.vr-sidebar {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    padding: 1.5rem 1rem;
+    height: 100%;
+    position: sticky;
+    top: 0;
+}
+
+.vr-sidebar__logo {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.vr-sidebar .nav-link {
+    color: #333;
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+    transition: background 0.3s, color 0.3s;
+    border-radius: 5px;
+}
+
+
+.vr-sidebar .nav-link:hover,
+.vr-sidebar .nav-link.active {
+    background-color: #007bff;
+    color: #fff;
+}
+</style>
+
+
+<aside class="vr-sidebar">
+    <div class="vr-sidebar__logo mb-4">
+        <h4 class="text-primary">Admin Panel</h4>
+    </div>
+    <nav class="nav flex-column">
+        <a href="/BusinessAdmin/Getall" class="vr-header__link" data-page="Business">Business</a>
+        <a href="/Package/GetAll" class="vr-header__link" data-page="Packages">Packages</a>
+        <a href="/CategoryAdmin/Index" class="vr-header__link" data-page="Categories">Categories</a>
+           <a href="/account/RegisterAdmin" class="vr-header__link" data-page="Add Admin">addAdmin</a>
+
+    </nav>
+
+
+
+</aside>

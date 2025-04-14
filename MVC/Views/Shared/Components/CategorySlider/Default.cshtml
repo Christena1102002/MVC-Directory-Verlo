@@ -1,0 +1,28 @@
+@model IEnumerable<mvc.Models.Category>
+
+@foreach (var category in Model)
+{
+    <a href="/Business/GetAll?categoryId=@category.Id" class="vr-category-item" title="@category.Name">
+        <div class="vr-category-item__icon">
+            @if (!string.IsNullOrEmpty(category.Icon))
+            {
+                <img src="@category.Icon" alt="@category.Name" class="vr-category-item__image" onerror="this.onerror=null; this.src='/images/defaults/category-default.png'; this.classList.add('fallback-icon');" />
+            }
+            else
+            {
+                <i class="fas fa-folder"></i>
+            }
+        </div>
+        <div class="vr-category-item__name">@category.Name</div>
+    </a>
+}
+
+@if (!Model.Any())
+{
+    <div class="vr-category-item">
+        <div class="vr-category-item__icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="vr-category-item__name">No Categories</div>
+    </div>
+}

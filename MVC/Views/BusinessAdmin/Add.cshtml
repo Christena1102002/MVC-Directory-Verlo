@@ -1,0 +1,1282 @@
+﻿@model BusinessViewModel
+@{
+    ViewData["Title"] = "Add New Business";
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    .business-form-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #f1f1f1;
+    }
+
+        .form-header h1 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        border-left: 4px solid #28a745;
+    }
+
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+        .form-section-title i {
+            margin-right: 10px;
+            color: #28a745;
+            font-size: 1.5rem;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            display: block;
+        }
+
+        .form-group small {
+            color: #6c757d;
+            margin-top: 5px;
+            display: block;
+        }
+
+    .form-control {
+        border-radius: 5px;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        width: 100%;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .input-group .form-control {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-grid-full {
+        grid-column: span 2;
+    }
+
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-preview {
+        width: 100%;
+        height: 200px;
+        border: 2px dashed #ced4da;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        position: relative;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+        transition: all 0.3s;
+    }
+
+        .image-preview i {
+            font-size: 3rem;
+            color: #ced4da;
+        }
+
+        .image-preview.has-image {
+            border: none;
+        }
+
+            .image-preview.has-image i {
+                display: none;
+            }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: #28a745;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid #6c757d;
+        color: #6c757d;
+    }
+
+        .btn-outline:hover {
+            background-color: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .features-container {
+        margin-top: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+        .feature-item input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding: 8px;
+        }
+
+            .feature-item input:focus {
+                outline: none;
+            }
+
+        .feature-item button {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+    .add-feature-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 15px;
+        background-color: #e9ecef;
+        color: #495057;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.3s;
+    }
+
+        .add-feature-btn:hover {
+            background-color: #dde2e6;
+            color: #28a745;
+        }
+
+        .add-feature-btn i {
+            margin-right: 5px;
+        }
+
+    .validation-summary-errors {
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        display: block;
+        margin-top: 5px;
+    }
+
+    .input-validation-error {
+        border-color: #dc3545;
+    }
+
+        .input-validation-error:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+    .success-message {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+        .success-message.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-grid-full {
+            grid-column: span 1;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 46px;
+        padding: 8px 15px;
+        border: 1px solid #ced4da;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px;
+        }
+
+    /* Feature selection styles */
+    .features-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .feature-checkbox {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .feature-checkbox:hover {
+            background-color: #e9ecef;
+        }
+
+        .feature-checkbox input {
+            margin-right: 10px;
+        }
+
+        .feature-checkbox.active {
+            background-color: #e8f5e9;
+        }
+
+    .feature-section {
+        margin-bottom: 20px;
+    }
+
+        .feature-section h4 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+            .feature-section h4 i {
+                margin-right: 8px;
+                color: #28a745;
+            }
+
+    .feature-category-title {
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #495057;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+        .feature-category-title i {
+            margin-right: 8px;
+            color: #28a745;
+        }
+
+    .custom-features-container {
+        margin-top: 20px;
+    }
+
+    /* Business Hours styles */
+    .opening-hours-container {
+        margin-top: 15px;
+    }
+
+    .day-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .day-label {
+        min-width: 100px;
+        font-weight: 600;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .day-closed {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .hours-inputs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-grow: 1;
+    }
+
+    .hours-divider {
+        margin: 0 5px;
+    }
+
+    .time-select {
+        border-radius: 5px;
+        padding: 8px 10px;
+        border: 1px solid #ced4da;
+        flex-basis: 110px;
+    }
+
+        .time-select:disabled {
+            background-color: #e9ecef;
+        }
+
+    .day-closed label {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+
+    .search-box {
+        position: absolute;
+        top: 10px;
+        left: 50px;
+        z-index: 1000;
+        width: 300px;
+    }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+    /* Enhanced validation styles */
+    .required-field::after {
+        content: '*';
+        color: #dc3545;
+        margin-left: 4px;
+    }
+
+    .optional-field::after {
+        content: '(optional)';
+        color: #6c757d;
+        font-size: 0.8em;
+        font-weight: normal;
+        margin-left: 6px;
+    }
+
+    .validation-tooltip {
+        position: absolute;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-size: 0.8em;
+        color: #495057;
+        max-width: 250px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 100;
+        display: none;
+    }
+
+    .field-info-icon {
+        color: #17a2b8;
+        margin-left: 5px;
+        cursor: help;
+    }
+
+    .validation-summary {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+        .validation-summary h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .validation-summary ul {
+            margin-bottom: 0;
+        }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="business-form-container">
+        <div class="form-header">
+            <h1><i class="fas fa-store-alt me-2"></i> Add Your Business</h1>
+            <p>Showcase your business to thousands of potential customers</p>
+        </div>
+
+        <!-- Add validation summary at the top -->
+        <div id="validationSummary" class="validation-summary" style="display: none;">
+            <h4><i class="fas fa-exclamation-triangle mr-2"></i> Please correct the following issues:</h4>
+            <ul id="validationList"></ul>
+        </div>
+
+        <form asp-action="Save" method="post" id="businessForm" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Basic Information</span>
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="Name" class="required-field">Business Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter business name" data-val="true"
+                               data-val-required="Business name is required" />
+                        <small>Choose a name that represents your business well (3-100 characters).</small>
+                        <span asp-validation-for="Name" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CategoryId" class="required-field">Business Category</label>
+                        <select asp-for="CategoryId" class="form-control category-select" id="categorySelect" data-val="true"
+                                data-val-required="Please select a business category">
+                            <option value="">Select a category</option>
+                            @foreach (var category in Model.categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        </select>
+                        <small>Choose the category that best fits your business.</small>
+                        <span asp-validation-for="CategoryId" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <label asp-for="Description" class="required-field">Business Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your business..."
+                                  data-val="true" data-val-required="Description is required"
+                                  data-val-length-min="10" data-val-length-min-message="Description must be at least 10 characters"></textarea>
+                        <small>Tell customers about your business, services, and what makes you unique (minimum 10 characters).</small>
+                        <span asp-validation-for="Description" class="field-validation-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section (MOVED UP) -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Business Features</span>
+                    <i class="fas fa-info-circle field-info-icon" title="Features help customers understand what your business offers"></i>
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group form-grid-full">
+                        <div class="feature-section">
+                            <h4><i class="fas fa-clipboard-list"></i> Category Features <span class="optional-field"></span></h4>
+                            <p class="mb-3">Select from standard features for your category:</p>
+
+                            <div id="categoryFeaturesPanel" class="features-panel">
+                                <div class="text-muted" id="noCategorySelected">
+                                    Please select a business category to see available features.
+                                </div>
+                                <!-- Category features will be loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="feature-section mt-4">
+                            <h4><i class="fas fa-plus-circle"></i> Custom Features</h4>
+                            <p class="mb-3">Add your own unique features:</p>
+
+                            <div id="featuresContainer" class="custom-features-container">
+                                <div class="feature-item">
+                                    <input type="text" name="CustomFeatures[0].Name" placeholder="Enter custom feature (e.g., Outdoor Seating)" class="feature-input" />
+                                    <button type="button" class="remove-feature"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+
+                            <button type="button" id="addFeatureBtn" class="add-feature-btn mt-3">
+                                <i class="fas fa-plus"></i> Add Custom Feature
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Location Details</span>
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group form-grid-full">
+                        <label asp-for="Address" class="required-field">Business Address</label>
+                        <input asp-for="Address" class="form-control" id="addressInput" placeholder="Enter full address"
+                               data-val="true" data-val-required="Business address is required" />
+                        <small>Enter the full street address of your business.</small>
+                        <span asp-validation-for="Address" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Latitude" class="required-field">Latitude</label>
+                        <input asp-for="Latitude" class="form-control" id="latInput" readonly
+                               data-val="true" data-val-required="Latitude is required. Please select a location on the map." />
+                        <span asp-validation-for="Latitude" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Longitude" class="required-field">Longitude</label>
+                        <input asp-for="Longitude" class="form-control" id="lngInput" readonly
+                               data-val="true" data-val-required="Longitude is required. Please select a location on the map." />
+                        <span asp-validation-for="Longitude" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <div id="mapContainer" style="position: relative;">
+                            <div class="search-box">
+                                <input type="text" id="mapSearchInput" placeholder="Search for a location..." />
+                            </div>
+                            <div id="map"></div>
+                        </div>
+                        <small class="mt-2">Search for your location or drag the marker to set your exact business location.</small>
+                        <div class="alert alert-info mt-2">
+                            <i class="fas fa-map-pin mr-2"></i> A correct location is essential for customers to find your business.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Hours Section -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <i class="fas fa-clock"></i>
+                    <span>Business Hours</span>
+                    <i class="fas fa-info-circle field-info-icon" title="Set your regular business hours to let customers know when they can visit"></i>
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group form-grid-full">
+                        <p>Set when your business is open. Leave times empty or check 'Closed' for days you're not open.</p>
+
+                        <div class="opening-hours-container">
+                            @{
+                                var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+                            }
+
+                            @for (int i = 0; i < days.Length; i++)
+                            {
+                                <div class="day-row" data-day="@days[i].ToLower()">
+                                    <div class="day-label">
+                                        <i class="far fa-calendar-alt me-2"></i>
+                                        @days[i]
+                                    </div>
+
+                                    <div class="day-closed">
+                                        <input type="checkbox" id="closed_@days[i].ToLower()"
+                                               class="closed-checkbox" />
+                                        <label for="closed_@days[i].ToLower()">Closed</label>
+                                    </div>
+
+                                    <div class="hours-inputs">
+                                        <select class="time-select open-time"
+                                                name="OpeningHours[@i].OpenTime">
+                                            @for (int hour = 0; hour < 24; hour++)
+                                            {
+                                                foreach (var minute in new[] { "00", "30" })
+                                                {
+                                                    var time = $"{hour:D2}:{minute}";
+                                                    <option value="@time">@time</option>
+                                                }
+                                            }
+                                        </select>
+
+                                        <span class="hours-divider">to</span>
+
+                                        <select class="time-select close-time"
+                                                name="OpeningHours[@i].CloseTime">
+                                            @for (int hour = 0; hour < 24; hour++)
+                                            {
+                                                foreach (var minute in new[] { "00", "30" })
+                                                {
+                                                    var time = $"{hour:D2}:{minute}";
+                                                    <option value="@time">@time</option>
+                                                }
+                                            }
+                                        </select>
+
+                                        <input type="hidden" name="OpeningHours[@i].DayOfWeek" value="@((int)Enum.Parse<DayOfWeek>(days[i]))" />
+                                        <input type="hidden" name="OpeningHours[@i].IsClosed" class="is-closed-input" value="false" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Section -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <i class="fas fa-image"></i>
+                    <span>Business Photo</span>
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group form-grid-full">
+                        <label asp-for="MainImage" class="required-field">Main Image</label>
+                        <input asp-for="MainImage" class="form-control" id="imageInput" placeholder="Enter image URL"
+                               data-val="true" data-val-required="A main image URL is required" />
+                        <small>Provide a URL to an image that represents your business. High-quality images attract more customers.</small>
+                        <span asp-validation-for="MainImage" class="field-validation-error"></span>
+
+                        <div class="image-preview" id="imagePreview">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/Business/GetAll" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i> Create Business
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div class="success-message" id="successMessage">
+    <i class="fas fa-check-circle me-2"></i> Business created successfully!
+</div>
+
+@section Scripts {
+    <!-- Load jQuery first (though it should be in _Layout.cshtml) -->
+    <script>
+        // Check if jQuery is already loaded, if not, load it
+        if (typeof jQuery === 'undefined') {
+            document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"><\/script>');
+        }
+    </script>
+
+    <!-- Now load the dependent libraries -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        // Wait for jQuery and make sure it's loaded
+        window.addEventListener('load', function() {
+            if (typeof jQuery !== 'undefined') {
+                initializeForm();
+            } else {
+                console.error("jQuery not loaded. Some features might not work.");
+                alert("Warning: Some features might not work properly. Please refresh the page.");
+            }
+        });
+
+        function initializeForm() {
+            console.log("Document ready - initializing business form");
+
+            // Fix for Select2
+            try {
+                if ($.fn.select2) {
+                    $('.category-select').select2({
+                        placeholder: "Select a category",
+                        allowClear: true,
+                        width: '100%' // Force 100% width
+                    });
+                    console.log("Select2 initialized successfully");
+                } else {
+                    console.error("Select2 plugin not found");
+                }
+            } catch (error) {
+                console.error("Failed to initialize Select2:", error);
+            }
+
+            // =================== MAP FUNCTIONALITY ===================
+            try {
+                if (typeof L === 'undefined') {
+                    console.error("Leaflet library not loaded");
+                    return;
+                }
+
+                console.log("Initializing map...");
+                // Make sure the map container exists
+                if (!document.getElementById('map')) {
+                    console.error('Map container not found');
+                    return;
+                }
+
+                // Initialize map with improved search - set to a default location in Jordan
+                var map = L.map('map').setView([31.9522, 35.2332], 13);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Add a draggable marker
+                var marker = L.marker([31.9522, 35.2332], { draggable: true }).addTo(map);
+
+                // Update coordinates when marker is dragged
+                marker.on('dragend', function(e) {
+                    var position = marker.getLatLng();
+                    $('#latInput').val(position.lat.toFixed(6));
+                    $('#lngInput').val(position.lng.toFixed(6));
+
+                    // Reverse geocode to get address
+                    reverseGeocode(position.lat, position.lng);
+                });
+
+                // Add geocoder control with better error handling
+                if (typeof L.Control.Geocoder !== 'undefined') {
+                    var geocoder = L.Control.geocoder({
+                        defaultMarkGeocode: false
+                    }).on('markgeocode', function(e) {
+                        try {
+                            var center = e.geocode.center;
+
+                            // Update map view
+                            map.setView(center, 15);
+
+                            // Update marker position
+                            marker.setLatLng(center);
+
+                            // Update form fields
+                            $('#latInput').val(center.lat.toFixed(6));
+                            $('#lngInput').val(center.lng.toFixed(6));
+                            $('#addressInput').val(e.geocode.name);
+                        } catch (error) {
+                            console.error("Error handling geocode result:", error);
+                        }
+                    }).addTo(map);
+                }
+
+                // Better search implementation
+                $('#mapSearchInput').on('keydown', function(e) {
+                    if (e.keyCode === 13) { // Enter key
+                        e.preventDefault();
+                        var searchTerm = $(this).val();
+
+                        if (searchTerm && typeof geocoder !== 'undefined') {
+                            try {
+                                geocoder.geocode(searchTerm);
+                            } catch (error) {
+                                console.error("Error during geocoding search:", error);
+                            }
+                        }
+                    }
+                });
+
+                // Fix map container size issues
+                setTimeout(function() {
+                    map.invalidateSize();
+                }, 500);
+
+                // Improved reverse geocoding function
+                function reverseGeocode(lat, lng) {
+                    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.display_name) {
+                                $('#addressInput').val(data.display_name);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error during reverse geocoding:', error);
+                        });
+                }
+
+            } catch (mapError) {
+                console.error("Failed to initialize map:", mapError);
+            }
+
+            // =================== BUSINESS FEATURES LOGIC ===================
+
+            // Fix category features loading
+            $('#categorySelect').on('change', function() {
+                var categoryId = $(this).val();
+                if (categoryId) {
+                    loadCategoryFeatures(categoryId);
+                } else {
+                    $('#categoryFeaturesPanel').html('<div class="text-muted">Please select a business category to see available features.</div>');
+                }
+            });
+
+            // Load features with proper error handling
+            function loadCategoryFeatures(categoryId) {
+                $.ajax({
+                    url: '/Category/GetCategoryFeatures?categoryId=' + categoryId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: displayCategoryFeatures,
+                    error: function() {
+                        // Fallback with sample features
+                        displayCategoryFeatures(getSampleFeatures(categoryId));
+                    }
+                });
+            }
+
+            // Sample features as fallback
+            function getSampleFeatures(categoryId) {
+                const featuresByCategory = {
+                    "1": [
+                        { id: 1, name: "Free Wi-Fi" },
+                        { id: 2, name: "Outdoor Seating" },
+                        { id: 3, name: "Takeaway Available" }
+                    ],
+                    "2": [
+                        { id: 4, name: "Parking Available" },
+                        { id: 5, name: "Delivery Service" }
+                    ],
+                    "3": [
+                        { id: 6, name: "Free Wi-Fi" },
+                        { id: 7, name: "Breakfast Included" }
+                    ]
+                };
+
+                return featuresByCategory[categoryId] || [
+                    { id: 1, name: "Free Wi-Fi" },
+                    { id: 2, name: "Air Conditioning" }
+                ];
+            }
+
+            // Fixed display function
+            function displayCategoryFeatures(features) {
+                if (!features || features.length === 0) {
+                    $('#categoryFeaturesPanel').html('<div class="text-muted">No features available for this category.</div>');
+                    return;
+                }
+
+                var featuresHtml = '';
+
+                features.forEach(function(feature, index) {
+                    if (feature && feature.name) {
+                        featuresHtml += `
+                            <label class="feature-checkbox">
+                                <input type="checkbox" name="CategoryFeatures[${index}].Id" value="${feature.id}" />
+                                <input type="hidden" name="CategoryFeatures[${index}].Name" value="${feature.name}" />
+                                ${feature.name}
+                            </label>
+                        `;
+                    }
+                });
+
+                $('#categoryFeaturesPanel').html(featuresHtml);
+
+                // Use direct event binding
+                $('.feature-checkbox input[type="checkbox"]').on('change', function() {
+                    $(this).closest('.feature-checkbox').toggleClass('active', this.checked);
+                });
+            }
+
+            // Fix custom features
+            var customFeatureIndex = 1;
+
+            $('#addFeatureBtn').click(function() {
+                var newFeature = `
+                    <div class="feature-item">
+                        <input type="text" name="CustomFeatures[${customFeatureIndex}].Name" placeholder="Enter custom feature" class="feature-input" />
+                        <button type="button" class="remove-feature"><i class="fas fa-times"></i></button>
+                    </div>
+                `;
+
+                $('#featuresContainer').append(newFeature);
+                customFeatureIndex++;
+            });
+
+            // Improved feature removal
+            $(document).on('click', '.remove-feature', function() {
+                if ($('.feature-item').length > 1) {
+                    $(this).closest('.feature-item').remove();
+                } else {
+                    $('.feature-item input').val('');
+                }
+            });
+
+            // =================== FORM SUBMISSION IMPROVEMENTS ===================
+
+            // Fixed business hours functionality
+            $('.closed-checkbox').change(function() {
+                var dayRow = $(this).closest('.day-row');
+                var isChecked = this.checked;
+
+                dayRow.find('.time-select').prop('disabled', isChecked);
+                dayRow.find('.is-closed-input').val(isChecked);
+
+                if (isChecked) {
+                    dayRow.addClass('day-disabled');
+                } else {
+                    dayRow.removeClass('day-disabled');
+                }
+            });
+
+            // Set default business hours
+            $('.open-time').val('09:00');
+            $('.close-time').val('17:00');
+
+            // Fix form submission with proper feature processing
+            $('#businessForm').submit(function(e) {
+                try {
+                    console.log("Form submission started");
+
+                    // التحقق من صحة البيانات المدخلة
+                    if (!validateForm()) {
+                        console.error("Form validation failed");
+                        e.preventDefault();
+                        return false;
+                    }
+
+                    // معالجة الميزات والساعات قبل الإرسال
+                    processFeatures();
+                    processBusinessHours();
+
+                    // إضافة رسالة للمستخدم
+                    showProcessingMessage();
+
+                    console.log("Form data is valid, submitting to server");
+                    return true;
+                } catch (err) {
+                    console.error("Form submission error:", err);
+                    alert("هناك خطأ في البيانات المدخلة. يرجى التحقق والمحاولة مرة أخرى.");
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // إضافة رسالة معالجة للمستخدم
+            function showProcessingMessage() {
+                var processingDiv = $('<div>')
+                    .addClass('processing-message')
+                    .css({
+                        'position': 'fixed',
+                        'top': '50%',
+                        'left': '50%',
+                        'transform': 'translate(-50%, -50%)',
+                        'background-color': 'rgba(255,255,255,0.9)',
+                        'padding': '20px',
+                        'border-radius': '5px',
+                        'box-shadow': '0 0 10px rgba(0,0,0,0.2)',
+                        'z-index': '9999',
+                        'text-align': 'center'
+                    })
+                    .html('<i class="fas fa-spinner fa-spin fa-2x"></i><p style="margin-top:10px">جاري حفظ بيانات العمل التجاري...</p>');
+
+                $('body').append(processingDiv);
+            }
+
+            // Enhanced validation function
+            function validateForm() {
+                var isValid = true;
+                var errors = [];
+
+                // Validate business name
+                var nameField = $('#Name');
+                if (!nameField.val()) {
+                    nameField.addClass('input-validation-error');
+                    errors.push("Business name is required");
+                    isValid = false;
+                } else if (nameField.val().length < 3) {
+                    nameField.addClass('input-validation-error');
+                    errors.push("Business name must be at least 3 characters");
+                    isValid = false;
+                } else {
+                    nameField.removeClass('input-validation-error');
+                }
+
+                // Validate category
+                var categoryField = $('#categorySelect');
+                if (!categoryField.val()) {
+                    categoryField.closest('.select2-container').addClass('input-validation-error');
+                    errors.push("Business category is required");
+                    isValid = false;
+                } else {
+                    categoryField.closest('.select2-container').removeClass('input-validation-error');
+                }
+
+                // Validate description
+                var descField = $('#Description');
+                if (!descField.val()) {
+                    descField.addClass('input-validation-error');
+                    errors.push("Business description is required");
+                    isValid = false;
+                } else if (descField.val().length < 10) {
+                    descField.addClass('input-validation-error');
+                    errors.push("Business description must be at least 10 characters");
+                    isValid = false;
+                } else {
+                    descField.removeClass('input-validation-error');
+                }
+
+                // Validate address
+                var addressField = $('#addressInput');
+                if (!addressField.val()) {
+                    addressField.addClass('input-validation-error');
+                    errors.push("Business address is required");
+                    isValid = false;
+                } else {
+                    addressField.removeClass('input-validation-error');
+                }
+
+                // Validate coordinates
+                var latField = $('#latInput');
+                var lngField = $('#lngInput');
+                if (!latField.val() || !lngField.val()) {
+                    latField.addClass('input-validation-error');
+                    lngField.addClass('input-validation-error');
+                    errors.push("Please select a location on the map");
+                    isValid = false;
+                } else {
+                    latField.removeClass('input-validation-error');
+                    lngField.removeClass('input-validation-error');
+                }
+
+                // Validate image URL
+                var imageField = $('#imageInput');
+                if (!imageField.val()) {
+                    imageField.addClass('input-validation-error');
+                    errors.push("Main image URL is required");
+                    isValid = false;
+                } else {
+                    imageField.removeClass('input-validation-error');
+                }
+
+                // Show validation summary if there are errors
+                if (!isValid) {
+                    $('#validationList').empty();
+                    errors.forEach(function(error) {
+                        $('#validationList').append(`<li>${error}</li>`);
+                    });
+                    $('#validationSummary').show();
+
+                    // Scroll to validation summary
+                    $('html, body').animate({
+                        scrollTop: $('#validationSummary').offset().top - 100
+                    }, 300);
+                } else {
+                    $('#validationSummary').hide();
+                }
+
+                return isValid;
+            }
+
+            // Add tooltip functionality for info icons
+            $('.field-info-icon').hover(function() {
+                var tooltip = $('<div class="validation-tooltip"></div>')
+                    .text($(this).attr('title'))
+                    .appendTo('body');
+
+                var position = $(this).offset();
+                tooltip.css({
+                    top: position.top + 25,
+                    left: position.left - 100,
+                    display: 'block'
+                });
+
+                $(this).data('tooltip', tooltip);
+            }, function() {
+                $(this).data('tooltip').remove();
+            });
+
+            // Fixed feature processing
+            function processFeatures() {
+                // Combine category and custom features
+                var allFeatures = [];
+                var featureIndex = 0;
+
+                // Get selected category features
+                $('.feature-checkbox input[type="checkbox"]:checked').each(function() {
+                    var featureName = $(this).siblings('input[type="hidden"]').val();
+
+                    if (featureName) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: `BusinessFeatures[${featureIndex}].Name`,
+                            value: featureName
+                        }).appendTo('#businessForm');
+
+                        featureIndex++;
+                    }
+                });
+
+                // Get custom features
+                $('.feature-input').each(function() {
+                    if ($(this).val()) {
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: `BusinessFeatures[${featureIndex}].Name`,
+                            value: $(this).val()
+                        }).appendTo('#businessForm');
+
+                        featureIndex++;
+                    }
+                });
+
+                // Remove old inputs to prevent duplicates
+                $('input[name^="CategoryFeatures"]').remove();
+                $('input[name^="CustomFeatures"]').remove();
+            }
+
+            // Fixed business hours processing
+            function processBusinessHours() {
+                $('.closed-checkbox').each(function() {
+                    var dayRow = $(this).closest('.day-row');
+                    var isClosed = this.checked;
+
+                    if (isClosed) {
+                        // If closed, disable the inputs and clear their values for submission
+                        dayRow.find('.time-select').prop('disabled', true);
+                        dayRow.find('.is-closed-input').val("true");
+                    }
+                });
+            }
+
+            // Fix image preview
+            $('#imageInput').on('input', function() {
+                var imageUrl = $(this).val();
+                if (imageUrl) {
+                    $('#imagePreview').css('background-image', 'url(' + imageUrl + ')');
+                    $('#imagePreview').addClass('has-image');
+                } else {
+                    $('#imagePreview').css('background-image', 'none');
+                    $('#imagePreview').removeClass('has-image');
+                }
+            });
+
+            // Load initial features if category is selected
+            var initialCategory = $('#categorySelect').val();
+            if (initialCategory) {
+                loadCategoryFeatures(initialCategory);
+            }
+        }
+    </script>
+}

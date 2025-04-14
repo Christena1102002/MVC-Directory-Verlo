@@ -1,0 +1,81 @@
+/* CSS لتعديل عرض الأقسام المحددة لتكون بعرض كامل */
+
+/* تصحيح عام لأقسام العرض الكامل */
+.full-width-section {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    overflow: hidden;
+}
+
+.full-width-section > .container {
+    width: 100%;
+    max-width: 1320px; /* قيمة Bootstrap الافتراضية للـ container */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* تعديلات الصفحة الرئيسية */
+.hero-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    border-radius: 0;
+}
+
+.stats-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.cta-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    border-radius: 0;
+}
+
+/* تعديلات صفحة كل الأعمال */
+.search-banner {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+/* تصحيح أي مشاكل في الـ layout بسبب العرض الكامل */
+main.container {
+    overflow-x: hidden; /* لمنع ظهور الشريط الأفقي */
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+main.container > *:not(.full-width-section):not(.hero-section):not(.stats-section):not(.cta-section):not(.search-banner) {
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* المزيد من تصحيحات الـ padding للصفحات الداخلية */
+main.container .row:not(.full-width-section):not(.hero-section):not(.stats-section):not(.cta-section):not(.search-banner) .row {
+    margin-left: 0;
+    margin-right: 0;
+}

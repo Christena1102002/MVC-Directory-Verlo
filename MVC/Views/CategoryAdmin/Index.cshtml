@@ -1,0 +1,46 @@
+﻿@model IQueryable<Category>
+<h2>Categories</h2>
+<a class="btn btn-success" href="/Category/New">New</a>
+<table class="table table-bordered table-hover">
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Icon</th>
+		<th>Features</th>
+		<th>Edit</th>
+		<th>Details</th>
+		<th>Delete</th>
+
+	</tr>
+
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>@item.Id</td>
+			<td>@item.Name</td>
+			<td><img src="@Url.Content(item.Icon)" width="50px" height="50px" /></td>
+
+
+			<td>
+				@if (@item.CategoryFeatures != null)
+				{
+					<ul>
+						@foreach (var feature in item.CategoryFeatures)
+						{
+							<li>@feature.Name</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<span>No features available</span>
+				}
+			</td>
+
+			<td><a class="btn btn-secondary" href="/Category/Edit/@item.Id">Edit</a></td>
+			<td><a class="btn btn-primary" href="/Category/Details/@item.Id">details</a></td>
+			<td><a class="btn btn-danger" href="/Category/Delete/@item.Id">Delete</a></td>
+		</tr>
+	}
+
+</table>

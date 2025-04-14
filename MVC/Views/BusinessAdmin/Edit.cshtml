@@ -1,0 +1,414 @@
+﻿@model mvc.ViewModels.BusinessViewModel
+@{
+    ViewData["Title"] = "Edit Business";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Edit Business Information</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="SaveEdit" method="post" id="editBusinessForm">
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger rounded p-2 mb-3"></div>
+
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Basic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">Business Name</label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="CategoryId" class="form-label">Category</label>
+                                    <select asp-for="CategoryId" class="form-select">
+                                        @if (Model.categories != null)
+                                        {
+                                            @foreach (var category in Model.categories)
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label">Description</label>
+                                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Address" class="form-label">Address</label>
+                                    <input asp-for="Address" class="form-control" />
+                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label asp-for="IsActive" class="form-check-label">Active Status</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Media & Location</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="MainImage" class="form-label">Main Image URL</label>
+                                    <div class="input-group">
+                                        <input asp-for="MainImage" class="form-control" placeholder="https://example.com/image.jpg" />
+                                        <button type="button" class="btn btn-outline-secondary" id="previewImageBtn">Preview</button>
+                                    </div>
+                                    <small class="text-muted">Enter a direct link to your image (not a file upload)</small>
+                                    <span asp-validation-for="MainImage" class="text-danger"></span>
+                                    <div class="mt-2" id="imagePreviewContainer" style="display:none">
+                                        <img id="imagePreview" class="img-fluid rounded" style="max-height:200px" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Latitude" class="form-label">Latitude</label>
+                                        <input asp-for="Latitude" class="form-control" id="latitude-input" />
+                                        <span asp-validation-for="Latitude" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Longitude" class="form-label">Longitude</label>
+                                        <input asp-for="Longitude" class="form-control" id="longitude-input" />
+                                        <span asp-validation-for="Longitude" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div id="mapid" style="height:250px;" class="border rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Business Features</h5>
+                        <button type="button" class="btn btn-sm btn-success" id="addFeatureBtn">
+                            <i class="bi bi-plus-circle"></i> Add Feature
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="featuresContainer">
+                            @if (Model.BusinessFeatures != null && Model.BusinessFeatures.Any())
+                            {
+                                for (int i = 0; i < Model.BusinessFeatures.Count; i++)
+                                {
+                                    <div class="feature-row row mb-2">
+                                        <input type="hidden" name="BusinessFeatures[@i].Id" value="@Model.BusinessFeatures[i].Id" />
+                                        <input type="hidden" name="BusinessFeatures[@i].BusinessId" value="@Model.BusinessFeatures[i].BusinessId" />
+                                        <div class="col-md-11">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                                <input type="text" class="form-control" name="BusinessFeatures[@i].Name" value="@Model.BusinessFeatures[i].Name" placeholder="Feature name" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-outline-danger remove-feature-btn">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div id="featureTemplate" style="display:none">
+                            <div class="feature-row row mb-2">
+                                <input type="hidden" name="BusinessFeatures[__INDEX__].Id" value="0" />
+                                <input type="hidden" name="BusinessFeatures[__INDEX__].BusinessId" value="@Model.Id" />
+                                <div class="col-md-11">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        <input type="text" class="form-control" name="BusinessFeatures[__INDEX__].Name" placeholder="Feature name" />
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-outline-danger remove-feature-btn">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Hours Section -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Business Hours</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Open</th>
+                                        <th>Close</th>
+                                        <th>Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+                                    }
+                                    @for (int i = 0; i < days.Length; i++)
+                                    {
+                                        var dayOfWeek = i + 1;
+                                        var dayHours = Model.OpeningHours?.FirstOrDefault(h =>
+                                        Convert.ToInt32(h.DayOfWeek) == dayOfWeek);
+
+                                        <tr>
+                                            <td>@days[i]</td>
+                                            <td>
+                                                <input type="time" class="form-control"
+                                                       name="OpeningHours[@i].OpenTime"
+                                                       value="@(dayHours != null ? dayHours.OpenTime : "09:00")" />
+                                                <input type="hidden" name="OpeningHours[@i].Id" value="@(dayHours?.Id ?? 0)" />
+                                                <input type="hidden" name="OpeningHours[@i].DayOfWeek" value="@dayOfWeek" />
+                                                <input type="hidden" name="OpeningHours[@i].BusinessId" value="@Model.Id" />
+                                            </td>
+                                            <td>
+                                                <input type="time" class="form-control"
+                                                       name="OpeningHours[@i].CloseTime"
+                                                       value="@(dayHours != null ? dayHours.CloseTime : "17:00")" />
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="form-check d-flex justify-content-center">
+                                                    @* Simplified checkbox logic *@
+                                                    <input class="form-check-input opening-hour-checkbox" type="checkbox"
+                                                           id="isOpen_@i"
+                                                           checked="checked" />
+                                                    <label class="form-check-label" for="isOpen_@i">Open</label>
+                                                    <input type="hidden" name="OpeningHours[@i].IsOpen" id="isOpenValue_@i" value="true" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="GetAll" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script>
+                // Handle image preview
+                $(document).ready(function() {
+                    $("#previewImageBtn").click(function() {
+                        const imageUrl = $("#MainImage").val();
+                        if (imageUrl) {
+                            $("#imagePreview").attr("src", imageUrl);
+                            $("#imagePreviewContainer").show();
+                        } else {
+                            alert("Please enter an image URL first");
+                        }
+                    });
+
+                    // Check if there's already an image URL and show it
+                    if ($("#MainImage").val()) {
+                        $("#imagePreview").attr("src", $("#MainImage").val());
+                        $("#imagePreviewContainer").show();
+                    }
+
+                    // Dynamic features handling
+                    $("#addFeatureBtn").click(function() {
+                        const template = $("#featureTemplate").html();
+                        const featuresCount = $(".feature-row").length;
+                        const newFeature = template.replace(/__INDEX__/g, featuresCount);
+                        $("#featuresContainer").append(newFeature);
+                    });
+
+                    // Remove feature button
+                    $(document).on("click", ".remove-feature-btn", function() {
+                        $(this).closest(".feature-row").remove();
+                    });
+                });
+
+                // Initialize Leaflet Map with better error handling
+                let map, marker;
+                function initMap() {
+                    try {
+                        // Get map container element
+                        const mapElement = document.getElementById('mapid');
+                        if (!mapElement) {
+                            console.error("Map container element not found");
+                            return;
+                        }
+
+                        const lat = parseFloat($("#latitude-input").val()) || 33.5138;  // Default to a fallback coordinate
+                        const lng = parseFloat($("#longitude-input").val()) || 36.2765;  // if values are invalid
+                        const position = [lat, lng];
+
+                        // Initialize map
+                        map = L.map('mapid').setView(position, 14);
+
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        }).addTo(map);
+
+                        marker = L.marker(position, { draggable: true }).addTo(map);
+
+                        // Force a map redraw after a short delay to handle any rendering issues
+                        setTimeout(function() {
+                            map.invalidateSize();
+                        }, 100);
+
+                        marker.on('dragend', function() {
+                            const position = marker.getLatLng();
+                            $("#latitude-input").val(position.lat.toFixed(6));
+                            $("#longitude-input").val(position.lng.toFixed(6));
+                        });
+
+                        // Add click functionality to set position
+                        map.on('click', function(e) {
+                            marker.setLatLng(e.latlng);
+                            $("#latitude-input").val(e.latlng.lat.toFixed(6));
+                            $("#longitude-input").val(e.latlng.lng.toFixed(6));
+                        });
+
+                        // Update marker when lat/lng fields change
+                        $("#latitude-input, #longitude-input").change(function() {
+                            try {
+                                const lat = parseFloat($("#latitude-input").val()) || 33.5138;
+                                const lng = parseFloat($("#longitude-input").val()) || 36.2765;
+                                const position = [lat, lng];
+                                marker.setLatLng(position);
+                                map.setView(position);
+                            } catch (e) {
+                                console.error("Error updating map marker:", e);
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Error initializing map:", e);
+                        if (document.getElementById("mapid")) {
+                            document.getElementById("mapid").innerHTML = "<div class='alert alert-warning'>Unable to load map. Please check coordinates or try refreshing the page.</div>";
+                        }
+                    }
+                }
+
+                // Initialize map after DOM is fully loaded
+                $(document).ready(function() {
+                    // Initialize the map
+                    setTimeout(function() {
+                        initMap();
+                    }, 200);
+
+                    // Fixed event handler for business hour checkboxes
+                    $(".opening-hour-checkbox").change(function() {
+                        const index = this.id.split('_')[1];
+                        const isChecked = $(this).prop('checked');
+                        $("#isOpenValue_" + index).val(isChecked ? "true" : "false");
+                    });
+
+                    // Add form validation check before submit
+                    $("#editBusinessForm").submit(function(event) {
+                        // Basic validation for required fields
+                        var name = $("#Name").val();
+                        if (!name.trim()) {
+                            alert("Business name is required");
+                            event.preventDefault();
+                            return false;
+                        }
+
+                        // Ensure coordinates are valid numbers
+                        var lat = parseFloat($("#latitude-input").val());
+                        var lng = parseFloat($("#longitude-input").val());
+                        if (isNaN(lat) || isNaN(lng)) {
+                            alert("Please set valid location coordinates");
+                            event.preventDefault();
+                            return false;
+                        }
+
+                        return true;
+                    });
+
+                    function updateIsOpenValue(openingHours) {
+            // الحصول على الوقت الحالي
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinute = currentTime.getMinutes();
+
+            // افتراضًا أن openingHours هو مصفوفة تحتوي على ساعات العمل
+            // مثلا: [{ day: 'Monday', opening: '09:00', closing: '18:00' }]
+
+            let isOpen = false;
+
+            // التحقق من ساعات العمل اليومية (هنا نفترض أن ساعات العمل هي ليوم معين)
+            openingHours.forEach(hour => {
+                // تحويل ساعات الافتتاح والإغلاق إلى وقت بالـ 24 ساعة
+                const [openHour, openMinute] = hour.opening.split(':').map(num => parseInt(num, 10));
+                const [closeHour, closeMinute] = hour.closing.split(':').map(num => parseInt(num, 10));
+
+                // التحقق إذا كان الوقت الحالي ضمن ساعات العمل
+                if (currentHour > openHour || (currentHour === openHour && currentMinute >= openMinute)) {
+                    if (currentHour < closeHour || (currentHour === closeHour && currentMinute <= closeMinute)) {
+                        isOpen = true;
+                    }
+                }
+            });
+
+            // إرجاع القيمة IsOpen بناءً على الوقت الحالي
+            return isOpen;
+        }
+
+        // مثال للاستخدام:
+        const openingHours = [
+            { day: 'Monday', opening: '09:00', closing: '18:00' },
+            { day: 'Tuesday', opening: '09:00', closing: '18:00' },
+            // يمكنك إضافة المزيد من الأيام
+        ];
+
+        const isOpen = updateIsOpenValue(openingHours);
+        console.log(isOpen ? "The business is open." : "The business is closed.");
+
+                    // Initialize checkboxes for business hours
+                    for (let i = 0; i < 7; i++) {
+                        updateIsOpenValue(i);
+                    }
+                });
+    </script>
+}

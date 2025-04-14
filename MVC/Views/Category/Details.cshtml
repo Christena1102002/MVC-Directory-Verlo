@@ -1,0 +1,29 @@
+﻿@model Category
+
+
+
+<div class="card" style="width: 18rem;">
+	<img src=" @Url.Content(Model.Icon)" width="50px" height="50px" / " class="card-img-top" alt="...">
+	<div class="card-body">
+		<h5 class="card-title text-danger">ID: @Model.Id</h5>
+		<h5 class="card-title text-danger">Name:@Model.Name</h5>
+		
+	@if (@Model.CategoryFeatures != null)
+	{
+		<ul>
+			@foreach (var feature in Model.CategoryFeatures)
+			{
+			<li>@feature.Name</li>
+			}
+		</ul>
+	}
+	else
+	{
+	<span>No features available</span>
+	}
+	</div>
+</div>
+<div>
+	<a href="/Category/Index" class="btn btn-success">Back to List</a>
+</div>
+

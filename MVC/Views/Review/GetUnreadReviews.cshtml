@@ -1,0 +1,23 @@
+﻿@model List<Review>
+
+<h2>Unread Reviews</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Rating</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in Model)
+        {
+            <tr>
+                @* <td>@review.Email</td> *@
+                @* <td>@review.Rating</td> *@
+                <td>@review.Comment</td>
+            </tr>
+        }
+    </tbody>
+</table>

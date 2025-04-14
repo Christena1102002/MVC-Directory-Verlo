@@ -1,0 +1,51 @@
+﻿@model IEnumerable<mvc.Models.Business>
+
+@{
+    ViewData["Title"] = "All Businesses";
+}
+
+<h2>All Businesses</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Main Image</th>
+            <th>Address</th>
+            <th>Is Active</th>
+            <th>Subscription End Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var business in Model)
+        {
+            <tr>
+                <td>@business.Name</td>
+                <td>@business.Category?.Name</td> <!-- عرض اسم الفئة -->
+                <td>@business.Description</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(business.MainImage))
+                    {
+                        <img src="@business.MainImage" alt="@business.Name" width="50" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
+                <td>@business.Address</td>
+                <td>@(business.IsActive ? "Active" : "Inactive")</td>
+                <td>@business.SubscriptionEndDate?.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Business", new { id = business.Id })" class="btn btn-primary">Edit</a>
+                    <a href="@Url.Action("Delete", "Business", new { id = business.Id })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Add", "Business")" class="btn btn-success">Add New Business</a>

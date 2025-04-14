@@ -1,0 +1,49 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<mvc.Models.Authorize.ApplicationUser> SignInManager
+@inject UserManager<mvc.Models.Authorize.ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle position-relative" href="#" id="chatNotificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-comments"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger chat-badge d-none">
+                0
+                <span class="visually-hidden">new messages</span>
+            </span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end p-0 chat-notifications-dropdown" aria-labelledby="chatNotificationsDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+            <div class="dropdown-header bg-primary text-white p-3">
+                <h6 class="m-0 d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-comments me-2"></i>Conversations</span>
+                    <a href="#" class="text-white btn-refresh-notifications" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
+                </h6>
+            </div>
+            
+            <div id="chatNotificationsList">
+                <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown-divider m-0"></div>
+            
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="dropdown-item text-center py-2" href="/AdminChat/Index">
+                    <i class="fas fa-headset me-1"></i> Go to Support Center
+                </a>
+            }
+            else
+            {
+                <a class="dropdown-item text-center py-2" href="/Support/UserChat">
+                    <i class="fas fa-headset me-1"></i> Go to Support Center
+                </a>
+            }
+        </div>
+    </li>
+}

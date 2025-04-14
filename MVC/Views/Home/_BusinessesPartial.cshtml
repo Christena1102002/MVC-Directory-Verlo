@@ -1,0 +1,72 @@
+@model List<mvc.Models.Business>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var business in Model)
+    {
+        <div class="col-lg-4 col-md-6">
+            <div class="business-card">
+                <div class="business-img" style="background-image: url('@(string.IsNullOrEmpty(business?.MainImage) ? "/images/default-business.jpg" : business.MainImage)')">
+                    @if (business?.PackageId > 2)
+                    {
+                        <div class="business-badge">Featured</div>
+                    }
+                </div>
+                <div class="business-content">
+                    <h4 class="business-title">@(business?.Name ?? "Business")</h4>
+                    <div class="business-category">
+                        <i class="@(string.IsNullOrEmpty(business?.Category?.Icon) ? "fas fa-tag" : business.Category.Icon) me-1"></i>
+                        @(business?.Category?.Name ?? "General")
+                    </div>
+                    <p class="business-description">@(business?.Description ?? "No description available")</p>
+                    
+                    @if (business?.BusinessFeatures != null && business.BusinessFeatures.Any())
+                    {
+                        <div class="business-features">
+                            @foreach (var feature in business.BusinessFeatures.Take(3))
+                            {
+                                <span class="feature-badge">@feature.Name</span>
+                            }
+                            @if (business.BusinessFeatures.Count > 3)
+                            {
+                                <span class="feature-badge">+@(business.BusinessFeatures.Count - 3) more</span>
+                            }
+                        </div>
+                    }
+                    
+                    <div class="business-footer">
+                        <div class="business-rating">
+                            @{
+                                var rating = business?.Reviews != null && business.Reviews.Any() ? 
+                                    business.Reviews.Average(r => r.Rating) : 0;
+                                for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(rating))
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else if (i - 0.5 <= rating)
+                                    {
+                                        <i class="fas fa-star-half-alt"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                            }
+                            <span class="ms-1">(@(business?.Reviews?.Count ?? 0))</span>
+                        </div>
+                        <a href="/Business/GetBusinessById?id=@business?.Id" class="business-link">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="col-12 text-center">
+        <p>No premium businesses available</p>
+    </div>
+}

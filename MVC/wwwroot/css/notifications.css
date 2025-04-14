@@ -1,0 +1,139 @@
+/* Notification styles */
+.notification-dropdown-menu {
+    min-width: 320px;
+    padding: 0;
+}
+
+.notification-dropdown-menu .dropdown-header {
+    background-color: var(--primary-color, #3498db);
+    color: white;
+    padding: 0.7rem 1rem;
+}
+
+.notification-item {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: normal;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-item.unread {
+    background-color: #e3f2fd;
+}
+
+.notification-item.unread:hover {
+    background-color: #d1e7fc;
+}
+
+.notification-content {
+    margin-bottom: 0.3rem;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* إعدادات الإشعارات */
+.notification-badge {
+    font-size: 0.6rem;
+    padding: 0.35em 0.55em;
+}
+
+.chat-notifications-dropdown {
+    min-width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* قائمة إشعارات المحادثات */
+.chat-notification-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.chat-notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.chat-notification-item:last-child {
+    border-bottom: none;
+}
+
+.chat-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.chat-notification-sender {
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.chat-notification-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.chat-notification-message {
+    font-size: 0.9rem;
+    color: #212529;
+    margin-bottom: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* إشعارات المراجعات */
+.review-notification-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.review-notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.review-notification-item.unread {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.review-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.review-notification-business {
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.review-stars {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.review-notification-sender {
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.review-notification-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+/* توست - إشعارات منبثقة */
+.toast-container {
+    z-index: 1080;
+}

@@ -1,0 +1,476 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Support Center";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4 col-lg-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-comments me-2"></i>My Conversations
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="userConversationsList" class="list-group list-group-flush">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <button id="newConversationBtn" class="btn btn-primary w-100">
+                        <i class="fas fa-plus-circle me-2"></i>New Conversation
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0" id="conversationTitle">
+                            <i class="fas fa-headset me-2"></i>Support Center
+                        </h5>
+                        <span class="badge bg-primary" id="adminStatus">Online</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="conversationContainer" class="d-flex flex-column" style="height: 500px;">
+                        <div id="messagesContainer" class="flex-grow-1 p-3 overflow-auto">
+                            <div class="text-center py-5">
+                                <i class="fas fa-comments text-muted mb-3" style="font-size: 4rem;"></i>
+                                <h4>Welcome to the Support Center</h4>
+                                <p class="text-muted">Start a new conversation or select one from the list</p>
+                            </div>
+                        </div>
+                        <div id="messageInputContainer" class="p-3 border-top d-none">
+                            <form id="messageForm" class="d-flex">
+                                <input type="text" id="messageInput" class="form-control me-2" placeholder="Type your message here..." required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .user-message {
+            align-self: flex-end;
+            background-color: #e3f2fd;
+            border-radius: 18px 18px 0 18px;
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-message {
+            align-self: flex-start;
+            background-color: #f1f0f0;
+            border-radius: 18px 18px 18px 0;
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        .conversation-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .conversation-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .conversation-item.active {
+            background-color: #e9f2ff;
+            border-right: 4px solid var(--primary-color);
+        }
+        
+        .conversation-badge {
+            font-size: 0.7rem;
+            padding: 0.25em 0.6em;
+        }
+        
+        .admin-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .last-message {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        #messagesContainer {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #conversationTitle {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        // إنشاء اتصال SignalR
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .withAutomaticReconnect()
+            .build();
+        
+        // المتغيرات العامة
+        let currentConversationId = null;
+        let conversations = [];
+        
+        // بدء الاتصال
+        connection.start()
+            .then(() => {
+                console.log("SignalR Connected");
+                loadUserConversations();
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+        
+        // تحميل محادثات المستخدم
+        async function loadUserConversations() {
+            try {
+                conversations = await connection.invoke("GetUserConversations");
+                renderConversationsList(conversations);
+            } catch (err) {
+                console.error("Error loading conversations: ", err);
+                showErrorMessage("An error occurred while loading conversations");
+            }
+        }
+        
+        // عرض قائمة المحادثات
+        function renderConversationsList(conversations) {
+            const container = document.getElementById("userConversationsList");
+            container.innerHTML = "";
+            
+            if (conversations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-0">No conversations found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            conversations.forEach(conv => {
+                const item = document.createElement("a");
+                item.href = "#";
+                item.className = `conversation-item list-group-item list-group-item-action d-flex justify-content-between align-items-center ${currentConversationId === conv.id ? 'active' : ''}`;
+                item.dataset.id = conv.id;
+                
+                const timeAgo = getTimeAgo(new Date(conv.lastMessageAt));
+                
+                item.innerHTML = `
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center">
+                            <span class="admin-name">${escapeHtml(conv.adminName)}</span>
+                        </div>
+                        <div class="last-message text-muted mt-1">${escapeHtml(conv.lastMessage || 'New conversation')}</div>
+                        <small class="text-muted">${timeAgo}</small>
+                    </div>
+                    ${conv.unreadCount > 0 ? `
+                        <span class="badge bg-danger rounded-pill conversation-badge">${conv.unreadCount}</span>
+                    ` : ''}
+                `;
+                
+                item.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    selectConversation(conv.id);
+                });
+                
+                container.appendChild(item);
+            });
+        }
+        
+        // اختيار محادثة
+        function selectConversation(conversationId) {
+            currentConversationId = conversationId;
+            
+            // تحديث العنصر النشط في القائمة
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.id == conversationId);
+            });
+            
+            // تحديث عنوان المحادثة
+            const conversation = conversations.find(c => c.id == conversationId);
+            if (conversation) {
+                document.getElementById('conversationTitle').innerHTML = `
+                    <i class="fas fa-headset me-2"></i>${escapeHtml(conversation.adminName)}
+                `;
+            }
+            
+            // تفعيل حقل الإدخال
+            document.getElementById('messageInputContainer').classList.remove('d-none');
+            
+            // تحميل رسائل المحادثة
+            loadConversationMessages(conversationId);
+        }
+        
+        // تحميل رسائل المحادثة
+        async function loadConversationMessages(conversationId) {
+            try {
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                `;
+                
+                const messages = await connection.invoke("GetConversationMessages", conversationId);
+                renderMessages(messages);
+                
+                // تحديث عدد الرسائل غير المقروءة في القائمة
+                loadUserConversations();
+                
+            } catch (err) {
+                console.error("Error loading messages: ", err);
+                showErrorMessage("An error occurred while loading messages");
+            }
+        }
+        
+        // عرض الرسائل
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = "";
+            
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-muted">No messages yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const userId = '@User.FindFirstValue(ClaimTypes.NameIdentifier)';
+            
+            messages.forEach(msg => {
+                const isCurrentUser = msg.senderId === userId;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isCurrentUser ? 'user-message' : 'admin-message';
+                
+                const time = new Date(msg.sentAt).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                messageDiv.innerHTML = `
+                    <div>${escapeHtml(msg.content)}</div>
+                    <div class="message-time d-flex ${isCurrentUser ? 'justify-content-end' : 'justify-content-start'}">
+                        ${time}
+                        ${isCurrentUser ? `
+                            <span class="ms-1">
+                                <i class="fas fa-check${msg.isRead ? '-double' : ''} ${msg.isRead ? 'text-primary' : 'text-muted'}"></i>
+                            </span>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+            
+            // التمرير إلى آخر رسالة
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // إنشاء محادثة جديدة
+        document.getElementById('newConversationBtn').addEventListener('click', () => {
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-pen-alt text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4>New Conversation</h4>
+                    <p class="text-muted">Type your message to the support team</p>
+                </div>
+            `;
+            
+            document.getElementById('conversationTitle').innerHTML = `
+                <i class="fas fa-headset me-2"></i>New Conversation
+            `;
+            
+            document.getElementById('messageInputContainer').classList.remove('d-none');
+            currentConversationId = null;
+            
+            // إلغاء تنشيط جميع العناصر في القائمة
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        });
+        
+        // إرسال رسالة
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            messageInput.value = '';
+            
+            try {
+                if (currentConversationId) {
+                    // إضافة الرسالة مؤقتًا إلى العرض
+                    addTemporaryMessage(message);
+                    
+                    // إرسال رسالة في محادثة موجودة
+                    await connection.invoke("SendMessageToConversation", currentConversationId, message);
+                } else {
+                    // إضافة الرسالة مؤقتًا إلى العرض
+                    addTemporaryMessage(message);
+                    
+                    // إنشاء محادثة جديدة وإرسال رسالة
+                    await connection.invoke("SendToAdmins", message);
+                    
+                    // تحديث المحادثات بعد إنشاء محادثة جديدة
+                    await loadUserConversations();
+                    
+                    // حدد المحادثة الأخيرة (الجديدة) بشكل تلقائي
+                    if (conversations.length > 0) {
+                        const newestConversation = conversations[0];
+                        currentConversationId = newestConversation.id;
+                        selectConversation(currentConversationId);
+                    }
+                }
+            } catch (err) {
+                console.error("Error sending message: ", err);
+                showErrorMessage("An error occurred while sending your message");
+            }
+        });
+        
+        // إضافة رسالة مؤقتة إلى العرض
+        function addTemporaryMessage(content) {
+            const container = document.getElementById('messagesContainer');
+            
+            // إزالة رسالة "لا توجد رسائل" إذا كانت موجودة
+            const emptyMessage = container.querySelector('.text-center.py-4');
+            if (emptyMessage) {
+                container.innerHTML = "";
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'user-message';
+            
+            const time = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            messageDiv.innerHTML = `
+                <div>${escapeHtml(content)}</div>
+                <div class="message-time d-flex justify-content-end">
+                    ${time}
+                    <span class="ms-1">
+                        <i class="fas fa-clock text-muted"></i>
+                    </span>
+                </div>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // استقبال رد من الإدارة
+        connection.on("ReceiveReply", function(data) {
+            // تحديث المحادثة الحالية إذا كانت مفتوحة
+            if (currentConversationId && currentConversationId == data.conversationId) {
+                loadConversationMessages(currentConversationId);
+            }
+            
+            // إظهار إشعار
+            showToast(`New message from ${data.adminName}`, data.message);
+            
+            // تحديث قائمة المحادثات
+            loadUserConversations();
+        });
+        
+        // دوال مساعدة
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+            
+            if (diffDay > 0) {
+                return `${diffDay} ${diffDay === 1 ? 'day' : 'days'} ago`;
+            } else if (diffHour > 0) {
+                return `${diffHour} ${diffHour === 1 ? 'hour' : 'hours'} ago`;
+            } else if (diffMin > 0) {
+                return `${diffMin} ${diffMin === 1 ? 'minute' : 'minutes'} ago`;
+            } else {
+                return 'Just now';
+            }
+        }
+        
+        function showErrorMessage(message) {
+            showToast("Error", message, "danger");
+        }
+        
+        function showToast(title, message, type = "primary") {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '1060';
+            
+            toastContainer.innerHTML = `
+                <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}</strong>: ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toastContainer);
+            
+            const toastElement = toastContainer.querySelector('.toast');
+            const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            toast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    </script>
+}
