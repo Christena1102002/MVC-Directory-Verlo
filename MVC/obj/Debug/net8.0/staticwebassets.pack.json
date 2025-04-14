@@ -285,6 +285,22 @@
       "PackagePath": "staticwebassets\\js\\notifications.js"
     },
     {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\js\\offline-handler.js",
+      "PackagePath": "staticwebassets\\js\\offline-handler.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\js\\review-hub.js",
+      "PackagePath": "staticwebassets\\js\\review-hub.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\js\\signalr-cdn.js",
+      "PackagePath": "staticwebassets\\js\\signalr-cdn.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\js\\signalr-fallback.js",
+      "PackagePath": "staticwebassets\\js\\signalr-fallback.js"
+    },
+    {
       "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
@@ -515,6 +531,18 @@
     {
       "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\lib\\signalr\\dist\\browser\\check.txt",
+      "PackagePath": "staticwebassets\\lib\\signalr\\dist\\browser\\check.txt"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\offline.html",
+      "PackagePath": "staticwebassets\\offline.html"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\New Folder\\MVCProject\\mvc\\wwwroot\\service-worker.js",
+      "PackagePath": "staticwebassets\\service-worker.js"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.mvc.props",

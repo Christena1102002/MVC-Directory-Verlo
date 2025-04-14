@@ -1,192 +1,325 @@
-// نظام إشعارات المحادثات للموقع
+// Chat notifications system for the website
 
 document.addEventListener('DOMContentLoaded', function() {
-    // تحقق من وجود عنصر إشعارات المحادثات
-    if (!document.getElementById('chatNotificationsDropdown')) return;
-    
-    // إنشاء اتصال SignalR
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl('/chathub')
-        .withAutomaticReconnect()
-        .build();
-    
-    // بدء الاتصال
-    connection.start()
-        .then(() => {
-            console.log("Chat Notifications Connected");
-            loadChatNotifications();
-        })
-        .catch(err => console.error("Error connecting to chat hub:", err));
-    
-    // تحميل الإشعارات
-    async function loadChatNotifications() {
-        try {
-            let conversations;
+    // Wait for SignalR to be loaded
+    const initChat = () => {
+        // Check if SignalR is available
+        if (typeof signalR === 'undefined') {
+            console.error('SignalR is not loaded yet');
             
-            // التحقق مما إذا كان المستخدم مسؤولاً أم مستخدمًا عاديًا
-            if (document.body.classList.contains('role-admin')) {
-                conversations = await connection.invoke("GetAdminConversations");
-            } else {
-                conversations = await connection.invoke("GetUserConversations");
-            }
-            
-            // عرض الإشعارات
-            renderNotifications(conversations);
-            
-            // تحديث عدد الإشعارات غير المقروءة
-            updateUnreadCount(conversations);
-        } catch (err) {
-            console.error("Error loading chat notifications:", err);
-            document.getElementById('chatNotificationsList').innerHTML = `
-                <div class="dropdown-item py-3 text-center text-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>حدث خطأ أثناء تحميل الإشعارات
-                </div>
-            `;
-        }
-    }
-    
-    // عرض الإشعارات
-    function renderNotifications(conversations) {
-        const container = document.getElementById('chatNotificationsList');
-        
-        // فقط العناصر التي تحتوي على رسائل غير مقروءة
-        const unreadConversations = conversations.filter(c => c.unreadCount > 0);
-        
-        if (unreadConversations.length === 0) {
-            container.innerHTML = `
-                <div class="dropdown-item py-3 text-center text-muted">
-                    <i class="fas fa-check-circle me-2"></i>لا توجد رسائل جديدة
-                </div>
-            `;
+            // Listen for signalRLoaded event
+            document.addEventListener('signalRLoaded', initChat);
             return;
         }
         
-        // ترتيب المحادثات حسب آخر رسالة (الأحدث أولاً)
-        unreadConversations.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+        // SignalR is available, initialize the connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .withAutomaticReconnect([0, 1000, 5000, 10000, 30000]) // Progressive retry intervals
+            .build();
+            
+        // Add connection event handlers
+        connection.onreconnecting(error => {
+            console.warn('Connection lost. Reconnecting...', error);
+            showConnectionStatus('Reconnecting...');
+        });
         
-        // إنشاء قائمة الإشعارات
-        container.innerHTML = '';
+        connection.onreconnected(connectionId => {
+            console.log('Connection reestablished. ID:', connectionId);
+            hideConnectionStatus();
+            loadChatNotifications(); // Refresh
+        });
         
-        for (let i = 0; i < Math.min(unreadConversations.length, 5); i++) {
-            const conv = unreadConversations[i];
-            const isAdmin = document.body.classList.contains('role-admin');
+        connection.onclose(error => {
+            console.error('Connection closed', error);
+            showConnectionStatus('Connection lost, attempting to reconnect...');
+        });
+
+        // Start connection
+        connection.start()
+            .then(() => {
+                console.log("Chat Notifications Connected");
+                hideConnectionStatus();
+                loadChatNotifications();
+            })
+            .catch(err => {
+                console.error("Error connecting to chat hub:", err);
+                showConnectionStatus('Failed to connect to server');
+            });
+        
+        // Show connection status
+        function showConnectionStatus(message) {
+            let statusEl = document.getElementById('chat-connection-status');
             
-            // الاسم المعروض يختلف باختلاف نوع المستخدم
-            const displayName = isAdmin ? conv.userName : conv.adminName;
+            if (!statusEl) {
+                statusEl = document.createElement('div');
+                statusEl.id = 'chat-connection-status';
+                statusEl.className = 'alert alert-warning position-fixed top-0 start-50 translate-middle-x m-3';
+                statusEl.style.zIndex = '9999';
+                document.body.appendChild(statusEl);
+            }
             
-            // تحويل التاريخ إلى نص مناسب
-            const timeAgo = getTimeAgo(new Date(conv.lastMessageAt));
-            
-            const item = document.createElement('a');
-            item.href = isAdmin ? `/AdminChat/Index?id=${conv.id}` : `/Support/UserChat?id=${conv.id}`;
-            item.className = 'dropdown-item p-3 border-bottom';
-            
-            item.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <strong class="text-primary">${escapeHtml(displayName)}</strong>
-                    <span class="badge bg-danger rounded-pill">${conv.unreadCount}</span>
-                </div>
-                <div class="text-truncate text-muted small">
-                    ${escapeHtml(conv.lastMessage || 'محادثة جديدة')}
-                </div>
-                <div class="text-end">
-                    <small class="text-muted">${timeAgo}</small>
-                </div>
+            statusEl.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>${message}
             `;
             
-            container.appendChild(item);
+            statusEl.style.display = 'block';
         }
         
-        // إضافة رابط "عرض الكل" إذا كان هناك أكثر من 5 محادثات
-        if (unreadConversations.length > 5) {
-            const viewAllLink = document.createElement('div');
-            viewAllLink.className = 'dropdown-item text-center py-2 text-primary';
+        // Hide connection status
+        function hideConnectionStatus() {
+            const statusEl = document.getElementById('chat-connection-status');
+            if (statusEl) {
+                statusEl.style.display = 'none';
+            }
+        }
+        
+        // Load notifications
+        async function loadChatNotifications() {
+            try {
+                let conversations;
+                
+                // Check if user is admin or regular user
+                if (document.body.classList.contains('role-admin')) {
+                    conversations = await connection.invoke("GetAdminConversations");
+                } else {
+                    conversations = await connection.invoke("GetUserConversations");
+                }
+                
+                // Display notifications
+                renderNotifications(conversations);
+                
+                // Update unread count
+                updateUnreadCount(conversations);
+            } catch (err) {
+                console.error("Error loading chat notifications:", err);
+                document.getElementById('chatNotificationsList').innerHTML = `
+                    <div class="dropdown-item py-3 text-center text-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error loading notifications
+                    </div>
+                `;
+            }
+        }
+        
+        // Render notifications
+        function renderNotifications(conversations) {
+            const container = document.getElementById('chatNotificationsList');
+            if (!container) return;
             
-            viewAllLink.innerHTML = `
-                <i class="fas fa-arrow-circle-right me-1"></i>
-                عرض كل الرسائل (${unreadConversations.length})
-            `;
+            // Only items with unread messages
+            const unreadConversations = conversations.filter(c => c.unreadCount > 0);
             
-            viewAllLink.addEventListener('click', () => {
-                window.location.href = isAdmin ? '/AdminChat/Index' : '/Support/UserChat';
+            if (unreadConversations.length === 0) {
+                container.innerHTML = `
+                    <div class="dropdown-item py-3 text-center text-muted">
+                        <i class="fas fa-check-circle me-2"></i>No new messages
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort conversations by last message (newest first)
+            unreadConversations.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+            
+            // Create notifications list
+            container.innerHTML = '';
+            
+            for (let i = 0; i < Math.min(unreadConversations.length, 5); i++) {
+                const conv = unreadConversations[i];
+                const isAdmin = document.body.classList.contains('role-admin');
+                
+                // Display name differs by user type
+                const displayName = isAdmin ? conv.userName : 'Support Team';
+                
+                // Convert date to appropriate text
+                const timeAgo = getTimeAgo(new Date(conv.lastMessageAt));
+                
+                const item = document.createElement('a');
+                item.href = isAdmin ? `/AdminChat/Index?id=${conv.id}` : `/Support/UserChat?id=${conv.id}`;
+                item.className = 'dropdown-item p-3 border-bottom';
+                
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong class="text-primary">${escapeHtml(displayName)}</strong>
+                        <span class="badge bg-danger rounded-pill">${conv.unreadCount}</span>
+                    </div>
+                    <div class="text-truncate text-muted small">
+                        ${escapeHtml(conv.lastMessage || 'New conversation')}
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">${timeAgo}</small>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            // Add "View All" link if there are more than 5 conversations
+            if (unreadConversations.length > 5) {
+                const viewAllLink = document.createElement('div');
+                viewAllLink.className = 'dropdown-item text-center py-2 text-primary';
+                const isAdmin = document.body.classList.contains('role-admin');
+                
+                viewAllLink.innerHTML = `
+                    <i class="fas fa-arrow-circle-right me-1"></i>
+                    View all messages (${unreadConversations.length})
+                `;
+                
+                viewAllLink.addEventListener('click', () => {
+                    window.location.href = isAdmin ? '/AdminChat/Index' : '/Support/UserChat';
+                });
+                
+                container.appendChild(viewAllLink);
+            }
+        }
+        
+        // Update unread notifications count
+        function updateUnreadCount(conversations) {
+            const badge = document.querySelector('.chat-badge');
+            if (!badge) return;
+            
+            // Total unread messages count
+            const totalUnread = conversations.reduce((total, conv) => total + conv.unreadCount, 0);
+            
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+            
+            // Update page title to show unread count
+            updatePageTitle(totalUnread);
+        }
+        
+        // Update page title to show unread count
+        function updatePageTitle(unreadCount) {
+            const originalTitle = document.title.replace(/^\(\d+\)\s/, '');
+            
+            if (unreadCount > 0) {
+                document.title = `(${unreadCount}) ${originalTitle}`;
+            } else {
+                document.title = originalTitle;
+            }
+        }
+        
+        // Receive new notifications
+        connection.on("ReceiveAdminMessage", function(data) {
+            // Update notifications only if user is admin
+            if (document.body.classList.contains('role-admin')) {
+                loadChatNotifications();
+                // Show toast notification
+                showToastNotification(`New message from ${data.senderName}`, data.message);
+            }
+        });
+        
+        connection.on("ReceiveReply", function(data) {
+            // Update notifications for regular users
+            if (!document.body.classList.contains('role-admin')) {
+                loadChatNotifications();
+                // Show toast notification
+                showToastNotification('New message from Support Team', data.message);
+            }
+        });
+        
+        // Show toast notification
+        function showToastNotification(title, message) {
+            // Check if browser supports notifications
+            if (!("Notification" in window)) {
+                console.log("This browser does not support desktop notifications");
+                return;
+            }
+            
+            // Request permission for notifications if not granted already
+            if (Notification.permission === "granted") {
+                const notification = new Notification(title, { 
+                    body: message,
+                    icon: '/images/logo-icon.png'
+                });
+                
+                notification.onclick = function() {
+                    window.focus();
+                    const chatPath = document.body.classList.contains('role-admin') ? 
+                        '/AdminChat/Index' : '/Support/UserChat';
+                    window.location.href = chatPath;
+                };
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === "granted") {
+                        const notification = new Notification(title, { 
+                            body: message,
+                            icon: '/images/logo-icon.png'
+                        });
+                        
+                        notification.onclick = function() {
+                            window.focus();
+                            const chatPath = document.body.classList.contains('role-admin') ? 
+                                '/AdminChat/Index' : '/Support/UserChat';
+                            window.location.href = chatPath;
+                        };
+                    }
+                });
+            }
+        }
+        
+        // Update notifications when refresh button is clicked
+        const refreshBtn = document.querySelector('.btn-refresh-notifications');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Change refresh icon to spinning icon
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // Load notifications
+                loadChatNotifications()
+                    .finally(() => {
+                        // Restore refresh icon
+                        this.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                    });
             });
+        }
+        
+        // Update notifications every minute
+        setInterval(loadChatNotifications, 60000);
+        
+        // Helper functions
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
             
-            container.appendChild(viewAllLink);
+            if (diffDay > 0) {
+                return `${diffDay} ${diffDay === 1 ? 'day' : 'days'} ago`;
+            } else if (diffHour > 0) {
+                return `${diffHour} ${diffHour === 1 ? 'hour' : 'hours'} ago`;
+            } else if (diffMin > 0) {
+                return `${diffMin} ${diffMin === 1 ? 'minute' : 'minutes'} ago`;
+            } else {
+                return 'Just now';
+            }
         }
+    };
+
+    // Request notification permission when page loads
+    if ("Notification" in window && Notification.permission === "default") {
+        // Request permission after user interaction with the page
+        document.addEventListener('click', function requestNotificationPermission() {
+            Notification.requestPermission();
+            document.removeEventListener('click', requestNotificationPermission);
+        }, {once: true});
     }
-    
-    // تحديث عدد الإشعارات غير المقروءة
-    function updateUnreadCount(conversations) {
-        const badge = document.querySelector('.chat-badge');
-        
-        // إجمالي عدد الرسائل غير المقروءة
-        const totalUnread = conversations.reduce((total, conv) => total + conv.unreadCount, 0);
-        
-        if (totalUnread > 0) {
-            badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
-            badge.classList.remove('d-none');
-        } else {
-            badge.classList.add('d-none');
-        }
-    }
-    
-    // استقبال الإشعارات الجديدة
-    connection.on("ReceiveAdminMessage", function(data) {
-        // تحديث الإشعارات فقط إذا كان المستخدم مسؤولاً
-        if (document.body.classList.contains('role-admin')) {
-            loadChatNotifications();
-        }
-    });
-    
-    connection.on("ReceiveReply", function(data) {
-        // تحديث الإشعارات للمستخدم العادي
-        if (!document.body.classList.contains('role-admin')) {
-            loadChatNotifications();
-        }
-    });
-    
-    // تحديث الإشعارات عند النقر على زر التحديث
-    document.querySelector('.btn-refresh-notifications').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // تغيير أيقونة التحديث إلى أيقونة دوارة
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        
-        // تحميل الإشعارات
-        loadChatNotifications()
-            .finally(() => {
-                // إعادة أيقونة التحديث
-                this.innerHTML = '<i class="fas fa-sync-alt"></i>';
-            });
-    });
-    
-    // تحديث الإشعارات كل دقيقة
-    setInterval(loadChatNotifications, 60000);
-    
-    // دوال مساعدة
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    function getTimeAgo(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffSec = Math.floor(diffMs / 1000);
-        const diffMin = Math.floor(diffSec / 60);
-        const diffHour = Math.floor(diffMin / 60);
-        const diffDay = Math.floor(diffHour / 24);
-        
-        if (diffDay > 0) {
-            return `منذ ${diffDay} ${diffDay === 1 ? 'يوم' : 'أيام'}`;
-        } else if (diffHour > 0) {
-            return `منذ ${diffHour} ${diffHour === 1 ? 'ساعة' : 'ساعات'}`;
-        } else if (diffMin > 0) {
-            return `منذ ${diffMin} ${diffMin === 1 ? 'دقيقة' : 'دقائق'}`;
-        } else {
-            return 'الآن';
-        }
-    }
+
+    // Start initialization
+    initChat();
 });

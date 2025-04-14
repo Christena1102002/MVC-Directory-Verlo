@@ -560,7 +560,6 @@ C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.MvcApplicatio
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.RazorAssemblyInfo.cache
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.RazorAssemblyInfo.cs
-C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.sourcelink.json
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\scopedcss\bundle\mvc.styles.css
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\scopedcss\projectbundle\mvc.bundle.scp.css
@@ -580,3 +579,4 @@ C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\refint\mvc.dll
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.pdb
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\mvc.genruntimeconfig.cache
 C:\Users\HP\Desktop\New Folder\MVCProject\mvc\obj\Debug\net8.0\ref\mvc.dll
+C:\Users\HP\Desktop\New Folder\MVCProject\mvc\bin\Debug\net8.0\libman.json

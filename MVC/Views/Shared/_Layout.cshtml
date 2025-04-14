@@ -482,6 +482,9 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.17/signalr.min.js"></script>
+
+    <script src="~/js/signalr-cdn.js" asp-append-version="true"></script>
 </head>
 <body class="@(User.IsInRole("Admin") ? "role-admin" : "")">
     <!-- Modern Header with Improved Alignment -->
@@ -541,7 +544,7 @@
                                         @if (User.IsInRole("Admin"))
                                         {
                                             <li><a class="dropdown-item" href="/Dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                                            <li><a class="dropdown-item" href="/CustomerService"><i class="fas fa-headset"></i> Customer Services</a></li>
+                                            <li><a class="dropdown-item" href="/AdminChat"><i class="fas fa-headset"></i> Customer Services</a></li>
                                             <li><a class="dropdown-item" href="/Business/GetAll"><i class="fas fa-list"></i> Manage Listings</a></li>
                                             <li><a class="dropdown-item" href="/Category"><i class="fas fa-tags"></i> Manage Categories</a></li>
                                             <li><a class="dropdown-item" href="/Package"><i class="fas fa-box"></i> Manage Packages</a></li>
@@ -550,7 +553,7 @@
                                         }
                                         else
                                         {
-                                            <li><a class="dropdown-item" href="/Support"><i class="fas fa-life-ring"></i> Support Center</a></li>
+                                            <li><a class="dropdown-item" href="/Support/UserChat"><i class="fas fa-life-ring"></i> Support Center</a></li>
                                             <li><a class="dropdown-item" href="/Business/Add"><i class="fas fa-plus-circle"></i> Add Business</a></li>
                                             <li><a class="dropdown-item" href="/Payment"><i class="fas fa-credit-card"></i> Payment</a></li>
                                             <li><a class="dropdown-item" href="/Package"><i class="fas fa-tag"></i> Prices</a></li>
@@ -654,7 +657,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    
+    <!-- Load SignalR from CDN with fallback -->
+    <script src="~/js/signalr-cdn.js" asp-append-version="true"></script>
     <script src="~/js/chat-notifications.js" asp-append-version="true"></script>
     
     <script>

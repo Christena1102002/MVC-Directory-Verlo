@@ -1,0 +1,2 @@
+This file is created to make sure the folder structure exists.
+If this file exists, but signalr.min.js doesn't, you'll need to restore the client libraries.

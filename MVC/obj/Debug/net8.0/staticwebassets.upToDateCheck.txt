@@ -68,6 +68,10 @@ wwwroot\js\business-filters-debug.js
 wwwroot\js\chat-notifications.js
 wwwroot\js\myBusiness.js
 wwwroot\js\notifications.js
+wwwroot\js\offline-handler.js
+wwwroot\js\review-hub.js
+wwwroot\js\signalr-cdn.js
+wwwroot\js\signalr-fallback.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
@@ -126,3 +130,6 @@ wwwroot\lib\jquery-validation\LICENSE.md
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
 wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+wwwroot\lib\signalr\dist\browser\check.txt
+wwwroot\offline.html
+wwwroot\service-worker.js

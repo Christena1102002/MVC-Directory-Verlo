@@ -1,0 +1,69 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Search Businesses";
+}
+
+<style>
+    /* تصميم قسم البحث ليكون بعرض كامل */
+    .search-banner {
+        padding: 4rem 0;
+        background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(44, 62, 80, 0.8)), 
+                    url('/images/search-banner.jpg') center/cover no-repeat;
+        color: white;
+    }
+
+    .search-banner .container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* تنسيق قسم نتائج البحث للالتزام بـ container */
+    .search-results-section {
+        max-width: 1320px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 3rem 15px;
+    }
+</style>
+
+<!-- قسم البحث - الآن يأخذ عرض كامل -->
+<section class="search-banner full-width-section">
+    <div class="container">
+        <h1 class="mb-4">Find Local Businesses</h1>
+        <form class="row g-3" action="/Business/Search" method="get">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" name="searchTerm" value="@ViewBag.SearchTerm" placeholder="Business name or keywords...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-tag"></i></span>
+                    <select class="form-select" name="categoryId">
+                        <option value="">All Categories</option>
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var category in ViewBag.Categories)
+                            {
+                                <option value="@category.Id" selected="@(ViewBag.CategoryId == category.Id ? "selected" : null)">
+                                    @category.Name
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- قسم نتائج البحث - يظل ضمن container -->
+<section class="search-results-section">
+    <!-- محتوى نتائج البحث -->
+</section>

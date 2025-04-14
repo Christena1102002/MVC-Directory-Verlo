@@ -55,6 +55,21 @@ namespace mvc
             builder.Services.AddScoped<ICategoryReposiotry, CategoryRepository>();
            // builder.Services.AddScoped<IcategoryFeaturesRepository, CategoryFeatures>();
 
+            // Add SignalR services
+            builder.Services.AddSignalR();
+
+            // Make sure CORS is configured correctly if needed
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder.WithOrigins("https://cdn.jsdelivr.net", "https://unpkg.com")
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -76,6 +91,8 @@ namespace mvc
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCors("CorsPolicy");
+
             app.MapHub<Chathub>("/chathub");
             app.MapHub<ReviewHub>("/reviewhub");
             app.MapControllerRoute(
@@ -85,6 +102,12 @@ namespace mvc
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            // Add the health check endpoint
+            app.MapControllerRoute(
+                name: "health-check",
+                pattern: "/health-check",
+                defaults: new { controller = "Health", action = "HealthCheck" });
 
             // Configure error handling
             if (app.Environment.IsDevelopment())
