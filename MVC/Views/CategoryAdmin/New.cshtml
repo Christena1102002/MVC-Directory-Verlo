@@ -1,0 +1,427 @@
+﻿@model CategoryViewModel
+@{
+    ViewData["Title"] = "Add New Category";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title mb-4">
+    <h1>Create New Category</h1>
+    <p class="text-muted">Add a new business category with custom features</p>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Category Information</h5>
+            <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to List
+            </a>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <form asp-action="SaveNew" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-uppercase text-muted mb-3">Basic Information</h6>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Category Name <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Icon" class="form-label">Icon Class</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="icon-preview-container">
+                                    <i id="iconPreview" class="@(string.IsNullOrEmpty(Model?.Icon) ? "fas fa-icons" : Model.Icon)"></i>
+                                </span>
+                                <input asp-for="Icon" id="iconInput" class="form-control" placeholder="e.g. fas fa-store" />
+                                <button class="btn btn-outline-secondary" type="button" id="iconPickerButton">
+                                    <i class="fas fa-search"></i> Browse
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Enter a Font Awesome icon class (e.g. fas fa-store)</small>
+                            <span asp-validation-for="Icon" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Icon Preview</label>
+                            <div class="p-4 bg-light text-center rounded border icon-preview-box">
+                                <i id="largeIconPreview" class="@(string.IsNullOrEmpty(Model?.Icon) ? "fas fa-icons" : Model.Icon)" style="font-size: 3rem;"></i>
+                                <div class="mt-2" id="iconName">@(string.IsNullOrEmpty(Model?.Icon) ? "No icon selected" : Model.Icon)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-uppercase text-muted mb-0">Category Features</h6>
+                            <button type="button" id="addFeatureBtn" class="btn btn-sm btn-success">
+                                <i class="fas fa-plus me-1"></i> Add Feature
+                            </button>
+                        </div>
+                        
+                        <div id="featuresContainer" class="features-container">
+                            @if (Model?.Features != null && Model.Features.Any())
+                            {
+                                for (int i = 0; i < Model.Features.Count; i++)
+                                {
+                                    <div class="feature-item card mb-2">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <input type="text" name="Features[@i].Name" class="form-control" value="@Model.Features[i].Name" placeholder="Feature name" />
+                                                </div>
+                                                <div class="ms-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-feature">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        
+                        <div id="noFeaturesMsg" class="alert alert-light text-center mt-3 @(Model?.Features != null && Model.Features.Any() ? "d-none" : "")">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No features added yet. Features help businesses specify their offerings.
+                        </div>
+                        
+                        <div class="mt-3 bg-light p-3 rounded">
+                            <h6 class="mb-2">🔍 What are Category Features?</h6>
+                            <p class="small text-muted mb-0">Features are specific attributes or services that businesses in this category can offer. For example, a "Restaurant" category might have features like "Delivery", "Outdoor Seating", etc.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-1"></i> Create Category
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Icon Picker Modal -->
+<div class="modal fade" id="iconPickerModal" tabindex="-1" aria-labelledby="iconPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="iconPickerModalLabel">Select Icon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="iconSearchInput" class="form-control" placeholder="Search icons...">
+                    </div>
+                </div>
+                <div class="row icon-picker-container">
+                    <!-- Icons will be loaded here -->
+                    <div class="text-center my-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .page-title {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            border-radius: 0.5rem;
+        }
+        
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.25rem;
+        }
+        
+        .feature-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .feature-item:hover {
+            border-left-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .feature-item .remove-feature {
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+        
+        .feature-item:hover .remove-feature {
+            opacity: 1;
+        }
+        
+        .input-group-text {
+            min-width: 45px;
+            justify-content: center;
+        }
+        
+        .text-uppercase {
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+        
+        .icon-preview-box {
+            transition: all 0.3s ease;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #largeIconPreview {
+            transition: all 0.3s ease;
+        }
+        
+        #iconName {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-family: monospace;
+        }
+        
+        /* Icon Picker Styles */
+        .icon-picker-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .icon-item:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            border-color: rgba(var(--bs-primary-rgb), 0.2);
+        }
+        
+        .icon-item i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-item span {
+            font-size: 0.7rem;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+            color: #6c757d;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Icon input preview
+            $('#iconInput').on('input', function() {
+                const iconClass = $(this).val();
+                $('#iconPreview').attr('class', iconClass || 'fas fa-icons');
+                $('#largeIconPreview').attr('class', iconClass || 'fas fa-icons');
+                $('#iconName').text(iconClass || "No icon selected");
+            });
+            
+            // Features management
+            const updateFeaturesVisibility = () => {
+                if ($('.feature-item').length === 0) {
+                    $('#noFeaturesMsg').removeClass('d-none');
+                } else {
+                    $('#noFeaturesMsg').addClass('d-none');
+                }
+            };
+            
+            // Add feature button
+            $('#addFeatureBtn').click(function() {
+                const index = $('.feature-item').length;
+                const newFeature = `
+                    <div class="feature-item card mb-2">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="text" name="Features[${index}].Name" class="form-control" placeholder="Feature name" />
+                                </div>
+                                <div class="ms-2">
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-feature">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#featuresContainer').append(newFeature);
+                updateFeaturesVisibility();
+                
+                // Focus on the new input
+                $('#featuresContainer .feature-item:last-child input').focus();
+            });
+            
+            // Remove feature button
+            $(document).on('click', '.remove-feature', function() {
+                $(this).closest('.feature-item').fadeOut(200, function() {
+                    $(this).remove();
+                    
+                    // Re-index features
+                    $('.feature-item').each(function(i) {
+                        $(this).find('input').attr('name', `Features[${i}].Name`);
+                    });
+                    
+                    updateFeaturesVisibility();
+                });
+            });
+            
+            // Initial check
+            updateFeaturesVisibility();
+            
+            // Icon picker functionality
+            const commonIcons = [
+                { icon: 'fas fa-store', name: 'Store' },
+                { icon: 'fas fa-utensils', name: 'Restaurant' },
+                { icon: 'fas fa-coffee', name: 'Café' },
+                { icon: 'fas fa-hotel', name: 'Hotel' },
+                { icon: 'fas fa-shopping-cart', name: 'Shopping' },
+                { icon: 'fas fa-car', name: 'Automotive' },
+                { icon: 'fas fa-graduation-cap', name: 'Education' },
+                { icon: 'fas fa-medkit', name: 'Healthcare' },
+                { icon: 'fas fa-home', name: 'Real Estate' },
+                { icon: 'fas fa-cut', name: 'Salon' },
+                { icon: 'fas fa-dumbbell', name: 'Fitness' },
+                { icon: 'fas fa-briefcase', name: 'Business' },
+                { icon: 'fas fa-paw', name: 'Pets' },
+                { icon: 'fas fa-music', name: 'Entertainment' },
+                { icon: 'fas fa-plane', name: 'Travel' },
+                { icon: 'fas fa-gamepad', name: 'Gaming' },
+                { icon: 'fas fa-tshirt', name: 'Fashion' },
+                { icon: 'fas fa-book', name: 'Books' },
+                { icon: 'fas fa-palette', name: 'Arts' },
+                { icon: 'fas fa-briefcase-medical', name: 'Medical' },
+                { icon: 'fas fa-baby', name: 'Children' },
+                { icon: 'fas fa-bicycle', name: 'Sports' },
+                { icon: 'fas fa-laptop', name: 'Technology' },
+                { icon: 'fas fa-gem', name: 'Jewelry' },
+                { icon: 'fas fa-gift', name: 'Gifts' },
+                { icon: 'fas fa-tools', name: 'Services' },
+                { icon: 'fas fa-money-bill-wave', name: 'Finance' },
+                { icon: 'fas fa-camera', name: 'Photography' },
+                { icon: 'fas fa-truck', name: 'Shipping' },
+                { icon: 'fas fa-ticket-alt', name: 'Events' },
+                { icon: 'fas fa-glass-martini', name: 'Bar' },
+                { icon: 'fas fa-spa', name: 'Spa' },
+                { icon: 'fas fa-tooth', name: 'Dental' },
+                { icon: 'fas fa-tree', name: 'Nature' },
+                { icon: 'fas fa-portrait', name: 'Beauty' },
+                { icon: 'fas fa-tractor', name: 'Agriculture' }
+            ];
+            
+            // Load icons into picker
+            function loadIcons(icons) {
+                const container = $('.icon-picker-container');
+                container.empty();
+                
+                icons.forEach(item => {
+                    container.append(`
+                        <div class="col-4 col-sm-3 col-md-2 mb-3">
+                            <div class="icon-item" data-icon="${item.icon}">
+                                <i class="${item.icon}"></i>
+                                <span>${item.name}</span>
+                            </div>
+                        </div>
+                    `);
+                });
+                
+                // Select icon event
+                $('.icon-item').click(function() {
+                    const iconClass = $(this).data('icon');
+                    $('#iconInput').val(iconClass).trigger('input');
+                    $('#iconPickerModal').modal('hide');
+                });
+            }
+            
+            // Show icon picker modal
+            $('#iconPickerButton').click(function() {
+                loadIcons(commonIcons);
+                $('#iconPickerModal').modal('show');
+            });
+            
+            // Search icons
+            $('#iconSearchInput').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                
+                if (searchTerm === '') {
+                    loadIcons(commonIcons);
+                    return;
+                }
+                
+                const filteredIcons = commonIcons.filter(item => 
+                    item.name.toLowerCase().includes(searchTerm) || 
+                    item.icon.toLowerCase().includes(searchTerm)
+                );
+                
+                loadIcons(filteredIcons);
+            });
+            
+            // Form submission validation
+            $('form').on('submit', function(e) {
+                // Optional validation can be added here
+            });
+        });
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

@@ -1,0 +1,723 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --secondary-color: #10B981;
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --info-color: #3B82F6;
+            --light-color: #F3F4F6;
+            --dark-color: #1F2937;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 64px;
+            --transition-speed: 0.3s;
+            --border-color: rgba(0,0,0,0.08);
+            --card-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #F9FAFB;
+            color: #374151;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            transition: all var(--transition-speed);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed);
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        .sidebar-collapsed .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+            max-width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        .dashboard-header {
+            height: var(--header-height);
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 1rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .dashboard-content {
+            padding: 1.5rem;
+        }
+
+        .dashboard-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-title {
+            color: #6B7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metric-icon.primary {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .metric-icon.success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .metric-icon.warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .metric-icon.danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .change-positive {
+            color: var(--secondary-color);
+        }
+
+        .change-negative {
+            color: var(--danger-color);
+        }
+
+        .dashboard-charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        .dashboard-recent {
+            margin-bottom: 1.5rem;
+        }
+
+        .recent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .recent-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .recent-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .recent-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 0;
+            box-shadow: var(--card-shadow);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .dashboard-table th {
+            background-color: #F9FAFB;
+            text-align: left;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            color: #4B5563;
+            font-size: 0.875rem;
+        }
+
+        .dashboard-table td {
+            padding: 0.75rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .dashboard-table tr:hover td {
+            background-color: #F9FAFB;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            height: 24px;
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-disabled {
+            background-color: rgba(156, 163, 175, 0.1);
+            color: #6B7280;
+        }
+
+        .btn-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: #F3F4F6;
+            color: #4B5563;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background-color: #E5E7EB;
+            color: #374151;
+        }
+
+        /* Mobile styles */
+        @@media (max-width: 1023px) {
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+            
+            .sidebar-collapsed .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+
+            .dashboard-header {
+                padding-left: 1rem;
+            }
+            
+            .mobile-sidebar-toggle {
+                display: block;
+                margin-right: 1rem;
+            }
+            
+            .dashboard-charts {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-metrics {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        /* Sidebar toggle button for mobile */
+        .mobile-sidebar-toggle {
+            background: none;
+            border: none;
+            color: #4B5563;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        @@media (max-width: 640px) {
+            .dashboard-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" id="dashboardContainer">
+        @await Html.PartialAsync("_Sidebar")
+        
+        <div class="main-content">
+            <div class="dashboard-header">
+                <button class="mobile-sidebar-toggle" id="sidebarToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="header-title">Dashboard Overview</div>
+                <div class="header-actions">
+                    <div class="notification-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span class="badge">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="dashboard-metrics">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Total Businesses</div>
+                            <div class="metric-icon primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value">2,854</div>
+                        <div class="metric-change change-positive">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span>12.5% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Active Users</div>
+                            <div class="metric-icon success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value">12,854</div>
+                        <div class="metric-change change-positive">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span>8.2% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">New Reviews</div>
+                            <div class="metric-icon warning">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value">384</div>
+                        <div class="metric-change change-negative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            <span>3.8% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">Premium Accounts</div>
+                            <div class="metric-icon danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="8" r="7"></circle>
+                                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value">482</div>
+                        <div class="metric-change change-positive">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                            <span>22.4% from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Businesses Growth</div>
+                            <div class="chart-actions">
+                                <button class="btn-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="19" cy="12" r="1"></circle>
+                                        <circle cx="5" cy="12" r="1"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="businessChart"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Categories Distribution</div>
+                            <div class="chart-actions">
+                                <button class="btn-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="19" cy="12" r="1"></circle>
+                                        <circle cx="5" cy="12" r="1"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="categoryChart"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-recent">
+                    <div class="recent-header">
+                        <div class="recent-title">Recent Businesses</div>
+                        <a href="/BusinessAdmin/GetAll" class="recent-link">View All</a>
+                    </div>
+                    <div class="recent-card">
+                        <div class="table-responsive">
+                            <table class="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Business Name</th>
+                                        <th>Owner</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Created Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Coffee Corner</td>
+                                        <td>Ahmed Mohammed</td>
+                                        <td>Restaurant</td>
+                                        <td><span class="status-badge status-active">Active</span></td>
+                                        <td>23 Apr 2023</td>
+                                        <td>
+                                            <button class="btn-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tech Solutions</td>
+                                        <td>Sara Ahmed</td>
+                                        <td>Technology</td>
+                                        <td><span class="status-badge status-active">Active</span></td>
+                                        <td>21 Apr 2023</td>
+                                        <td>
+                                            <button class="btn-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Health Clinic</td>
+                                        <td>Hossam Ali</td>
+                                        <td>Healthcare</td>
+                                        <td><span class="status-badge status-pending">Pending</span></td>
+                                        <td>19 Apr 2023</td>
+                                        <td>
+                                            <button class="btn-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fashion Store</td>
+                                        <td>Laila Karim</td>
+                                        <td>Retail</td>
+                                        <td><span class="status-badge status-disabled">Disabled</span></td>
+                                        <td>18 Apr 2023</td>
+                                        <td>
+                                            <button class="btn-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Auto Repairs</td>
+                                        <td>Mahmoud Hassan</td>
+                                        <td>Automotive</td>
+                                        <td><span class="status-badge status-active">Active</span></td>
+                                        <td>15 Apr 2023</td>
+                                        <td>
+                                            <button class="btn-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if sidebar is collapsed from local storage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            
+            if (sidebarCollapsed) {
+                document.getElementById('dashboardContainer').classList.add('sidebar-collapsed');
+            }
+            
+            // Mobile sidebar toggle
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                const sidebar = document.getElementById('adminSidebar');
+                sidebar.classList.toggle('mobile-open');
+                const overlay = document.getElementById('sidebarOverlay');
+                overlay.classList.toggle('active');
+            });
+
+            // Business growth chart
+            const businessCtx = document.getElementById('businessChart').getContext('2d');
+            new Chart(businessCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'New Businesses',
+                        data: [150, 210, 180, 250, 300, 350, 320, 390, 420, 450, 480, 520],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: '#3B82F6',
+                        tension: 0.4,
+                        pointBackgroundColor: '#3B82F6'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                display: true,
+                                color: 'rgba(107, 114, 128, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Categories distribution chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Restaurants', 'Retail', 'Healthcare', 'Technology', 'Entertainment'],
+                    datasets: [{
+                        data: [35, 25, 15, 15, 10],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 20,
+                                color: '#4B5563'
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

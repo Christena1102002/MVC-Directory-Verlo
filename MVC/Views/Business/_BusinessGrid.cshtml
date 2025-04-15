@@ -1,0 +1,85 @@
+@model List<mvc.Models.Business>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var business in Model)
+    {
+        <div class="business-card" 
+             data-name="@business.Name.ToLower()" 
+             data-category="@(business.Category?.Name?.ToLower() ?? "")" 
+             data-status="@(business.IsActive ? "active" : "inactive")" 
+             data-package="@(business.PackageId == 1 ? "regular" : business.PackageId == 2 ? "premium" : "featured")"
+             data-category-id="@business.CategoryId">
+            
+            <div class="business-img" style="background-image: url('@(string.IsNullOrEmpty(business.MainImage) ? "/images/default-business.jpg" : business.MainImage)')">
+                <div class="business-status @(business.IsActive ? "status-active" : "status-inactive")">
+                    @(business.IsActive ? "Active" : "Inactive")
+                </div>
+                
+                <div class="business-package @(business.PackageId == 1 ? "package-regular" : business.PackageId == 2 ? "package-premium" : "package-featured")">
+                    @(business.PackageId == 1 ? "Regular" : business.PackageId == 2 ? "Premium" : "Featured")
+                </div>
+            </div>
+            
+            <div class="business-content">
+                <div class="business-title">
+                    <h4 class="business-name">@business.Name</h4>
+                    <div class="business-rating">
+                        @{
+                            // Fix the ToString format issue by explicitly converting to double
+                            double rating = business.Reviews != null && business.Reviews.Any() ? 
+                                Convert.ToDouble(business.Reviews.Average(r => r.Rating)) : 0.0;
+                            // Now Format with 1 decimal place
+                            string formattedRating = string.Format("{0:0.0}", rating);
+                        }
+                        <i class="fas fa-star"></i> @formattedRating
+                    </div>
+                </div>
+                
+                <div class="business-category">
+                    <i class="@(string.IsNullOrEmpty(business.Category?.Icon) ? "fas fa-tag" : business.Category.Icon) me-1"></i>
+                    @(business.Category?.Name ?? "General")
+                </div>
+                
+                <p class="business-description">@(business.Description?.Length > 100 ? business.Description.Substring(0, 100) + "..." : business.Description)</p>
+                
+                <div class="business-meta">
+                    <div class="subscription-date">
+                        <i class="far fa-calendar-alt me-1"></i> Expires: 
+                        @(business.SubscriptionEndDate.HasValue 
+                            ? business.SubscriptionEndDate.Value.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.InvariantCulture) 
+                            : "Not set")
+                    </div>
+                    
+                    <div class="business-actions">
+                        <a href="/Business/GetBusinessById?id=@business.Id" class="action-btn view-btn" title="View details">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="/Business/Edit?id=@business.Id" class="action-btn edit-btn" title="Edit business">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        @if (business.PackageId == 1)
+                        {
+                            <a href="/Package" class="action-btn upgrade-btn" title="Upgrade package">
+                                <i class="fas fa-arrow-up"></i>
+                            </a>
+                        }
+                        <a href="javascript:void(0)" class="action-btn delete-btn" 
+                           title="Delete business" 
+                           onclick="confirmDelete(@business.Id, '@business.Name.Replace("'", "\\'"))'">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="no-results">
+        <i class="fas fa-search"></i>
+        <h3>No businesses found</h3>
+        <p>No businesses match your current filters. Try adjusting your search criteria.</p>
+    </div>
+}

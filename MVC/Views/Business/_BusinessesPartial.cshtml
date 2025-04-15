@@ -1,0 +1,94 @@
+@model List<mvc.Models.Business>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var business in Model)
+    {
+        <div class="business-card" data-id="@business.Id" 
+             data-name="@business.Name" 
+             data-category="@business.CategoryId"
+             data-rating="@(business.Reviews != null && business.Reviews.Any() ? business.Reviews.Average(r => r.Rating) : 0)"
+             data-status="@business.IsActive.ToString().ToLower()"
+             data-package="@business.PackageId">
+
+            <div class="card-image" style="background-image: url('@(string.IsNullOrEmpty(business.MainImage) ? "/images/default-business.jpg" : business.MainImage)')">
+                <div class="card-category">
+                    <i class="@(business.Category?.Icon ?? "fas fa-store")"></i> @(business.Category?.Name ?? "General")
+                </div>
+                <div class="card-status @(business.IsActive ? "status-active" : "status-inactive")">
+                    @(business.IsActive ? "Active" : "Inactive")
+                </div>
+                <div class="package-badge @(business.PackageId == 1 ? "package-regular" : business.PackageId == 2 ? "package-premium" : "package-featured")">
+                    @(business.PackageId == 1 ? "Regular" : business.PackageId == 2 ? "Premium" : "Featured")
+                </div>
+            </div>
+
+            <div class="card-content">
+                <h3 class="card-title">@business.Name</h3>
+                
+                <div class="card-rating">
+                    <div class="rating-stars">
+                        @{
+                            double rating = business.Reviews != null && business.Reviews.Any() ? 
+                                business.Reviews.Average(r => r.Rating) : 0;
+                            int fullStars = (int)Math.Floor(rating);
+                            bool hasHalfStar = rating - fullStars >= 0.5;
+                            int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                            
+                            for (int i = 0; i < fullStars; i++)
+                            {
+                                <i class="fas fa-star"></i>
+                            }
+                            
+                            if (hasHalfStar)
+                            {
+                                <i class="fas fa-star-half-alt"></i>
+                            }
+                            
+                            for (int i = 0; i < emptyStars; i++)
+                            {
+                                <i class="far fa-star"></i>
+                            }
+                        }
+                    </div>
+                    <span class="rating-count">@rating.ToString("0.0") (@(business.Reviews?.Count() ?? 0) reviews)</span>
+                </div>
+                
+                <p class="card-description">
+                    @(business.Description?.Length > 100 ? business.Description.Substring(0, 100) + "..." : business.Description)
+                </p>
+                
+                @if (business.BusinessFeatures != null && business.BusinessFeatures.Any())
+                {
+                    <div class="card-features">
+                        @foreach (var feature in business.BusinessFeatures.Take(3))
+                        {
+                            <span class="feature-tag">@feature.Name</span>
+                        }
+                        @if (business.BusinessFeatures.Count() > 3)
+                        {
+                            <span class="feature-tag">+@(business.BusinessFeatures.Count() - 3) more</span>
+                        }
+                    </div>
+                }
+                
+                <div class="card-actions">
+                    <a href="/Business/GetBusinessById?id=@business.Id" class="card-btn view-btn">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a href="#" class="card-btn contact-btn">
+                        <i class="fas fa-comment"></i> Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h3>No businesses found</h3>
+        <p class="text-muted">Try adjusting your filters or search terms.</p>
+    </div>
+}

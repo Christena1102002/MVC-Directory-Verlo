@@ -1,0 +1,249 @@
+﻿@model List<mvc.ViewModels.RoleViewModel>
+@{
+    ViewData["Title"] = "Role Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Role Management</h1>
+        <p class="text-muted">Manage user roles and permissions</p>
+    </div>
+    <a href="@Url.Action("Create", "Role", new { area = "Admin" })" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-2"></i>Add New Role
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">System Roles</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="roleSearch" class="form-control border-start-0" placeholder="Search roles...">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="rolesTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Role Name</th>
+                        <th>Members</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var role in Model)
+                        {
+                            bool isSystemRole = (role.RoleName == "Admin" || role.RoleName == "User");
+                            
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="role-icon @(isSystemRole ? "system-role" : "")">
+                                            <i class="@(role.RoleName == "Admin" ? "fas fa-shield-alt" : 
+                                                     role.RoleName == "User" ? "fas fa-user" : "fas fa-user-tag")"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="mb-0">@role.RoleName</h6>
+                                            @if (isSystemRole)
+                                            {
+                                                <span class="badge bg-info">System Role</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("ManageUsers", "Role", new { area = "Admin", roleId = role.Id })" class="btn btn-sm btn-outline-primary">
+                                        <span class="badge bg-secondary">@role.UsersCount</span> Users
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (isSystemRole)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="@Url.Action("ManageUsers", "Role", new { area = "Admin", roleId = role.Id })" class="btn btn-sm btn-outline-primary"
+                                           data-bs-toggle="tooltip" title="Manage Users">
+                                            <i class="fas fa-users"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", "Role", new { area = "Admin", id = role.Id })" class="btn btn-sm btn-outline-secondary"
+                                           data-bs-toggle="tooltip" title="Edit Role" 
+                                           @(isSystemRole ? "disabled" : "")>
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @if (!isSystemRole)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger delete-role-btn"
+                                                    data-id="@role.Id" data-name="@role.RoleName" data-bs-toggle="tooltip" title="Delete Role">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-tag text-muted"></i>
+                                    <h6>No roles found</h6>
+                                    <p class="text-muted">Create a new role to get started</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Role Confirmation Modal -->
+<div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRoleModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <p>Are you sure you want to delete the role <strong id="roleNameToDelete"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    This action will remove the role from all associated users and cannot be undone.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" asp-controller="Role" asp-area="Admin" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="roleIdToDelete" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-2"></i>Delete Role
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+        
+        .role-icon.system-role {
+            background-color: rgba(var(--bs-info-rgb), 0.2);
+            color: var(--bs-info);
+        }
+        
+        .empty-state {
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        #roleSearch {
+            transition: all 0.3s ease;
+        }
+        
+        #roleSearch:focus {
+            box-shadow: none;
+            border-color: var(--primary-color);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.05);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Role search functionality
+            $("#roleSearch").on("keyup", function() {
+                const value = $(this).val().toLowerCase();
+                $("#rolesTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+                
+                // Show empty state if no results
+                const visibleRows = $("#rolesTable tbody tr:visible").length;
+                if (visibleRows === 0) {
+                    if ($("#noResultsRow").length === 0) {
+                        $("#rolesTable tbody").append(`
+                            <tr id="noResultsRow">
+                                <td colspan="4" class="text-center py-3">
+                                    <div class="alert alert-light mb-0">
+                                        <i class="fas fa-search me-2"></i>
+                                        No roles found matching your search
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                    }
+                } else {
+                    $("#noResultsRow").remove();
+                }
+            });
+            
+            // Delete role confirmation
+            $(".delete-role-btn").on("click", function() {
+                const roleId = $(this).data("id");
+                const roleName = $(this).data("name");
+                
+                $("#roleIdToDelete").val(roleId);
+                $("#roleNameToDelete").text(roleName);
+                $("#deleteRoleForm").attr("action", "@Url.Action("Delete", "Role", new { area = "Admin" })");
+                
+                const modal = new bootstrap.Modal(document.getElementById('deleteRoleModal'));
+                modal.show();
+            });
+        });
+    </script>
+}

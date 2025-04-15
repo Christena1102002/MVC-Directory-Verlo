@@ -1,0 +1,352 @@
+﻿@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Categories Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Categories Management</h1>
+        <p class="text-muted">Manage all business categories in the system</p>
+    </div>
+    <a href="@Url.Action("New")" class="btn btn-primary">
+        <i class="fas fa-plus-circle me-2"></i>Add New Category
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="card-title mb-0">All Categories</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Search categories...">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="categoriesTable" class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="60">#</th>
+                        <th width="80">Icon</th>
+                        <th>Name</th>
+                        <th>Features</th>
+                        <th>Businesses</th>
+                        <th width="150" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.Id</td>
+                                <td>
+                                    <div class="category-icon-wrapper">
+                                        @if (!string.IsNullOrEmpty(category.Icon))
+                                        {
+                                            <i class="@category.Icon"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-tag text-muted"></i>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-medium">@category.Name</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary rounded-pill">
+                                        @(category.CategoryFeatures?.Count() ?? 0)
+                                    </span>
+                                    @if (category.CategoryFeatures != null && category.CategoryFeatures.Any())
+                                    {
+                                        <button class="btn btn-link btn-sm p-0 ms-2 show-features" 
+                                                type="button" 
+                                                data-bs-toggle="popover" 
+                                                data-bs-html="true"
+                                                data-bs-content="@string.Join("<br>", category.CategoryFeatures.Select(f => $"• {f.Name}"))">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary rounded-pill">
+                                        @(category.Businesses?.Count() ?? 0)
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="@Url.Action("Details", new { id = category.Id })" class="btn btn-sm btn-outline-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = category.Id })" class="btn btn-sm btn-outline-primary" title="Edit Category">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
+                                                data-id="@category.Id" 
+                                                data-name="@category.Name"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                                title="Delete Category">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="py-5">
+                                    <i class="fas fa-folder-open text-muted mb-3" style="font-size: 3rem;"></i>
+                                    <h5 class="mt-3">No categories found</h5>
+                                    <p class="text-muted">Create a new category to get started.</p>
+                                    <a href="@Url.Action("New")" class="btn btn-primary mt-2">
+                                        <i class="fas fa-plus-circle me-1"></i> Add New Category
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <p>Are you sure you want to delete the category <strong id="categoryName"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This will also delete all associated features. Businesses in this category will need reassignment.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDelete" class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .category-icon-wrapper {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .category-icon-wrapper i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .table > tbody > tr {
+            vertical-align: middle;
+            transition: all 0.2s ease;
+        }
+        
+        .table > tbody > tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .table > tbody > tr:hover .category-icon-wrapper {
+            background-color: rgba(52, 152, 219, 0.1);
+            transform: scale(1.05);
+        }
+        
+        /* Enhanced popover styling */
+        .popover {
+            max-width: 300px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .popover-body {
+            padding: 1rem;
+            font-size: 0.925rem;
+            color: #333;
+        }
+        
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+            border-radius: 0.5rem;
+        }
+        
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.25rem;
+        }
+        
+        #searchInput {
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput:focus {
+            box-shadow: none;
+            border-color: var(--primary-color);
+        }
+        
+        .page-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            const dataTable = new simpleDatatables.DataTable("#categoriesTable", {
+                searchable: true,
+                fixedHeight: false,
+                perPage: 10,
+                columns: [
+                    { select: [0, 1, 5], sortable: false } // Disable sorting on ID, icon and actions columns
+                ],
+                labels: {
+                    placeholder: "Search...",
+                    perPage: "{select} entries per page",
+                    noRows: "No categories found",
+                    info: "Showing {start} to {end} of {rows} categories"
+                }
+            });
+            
+            // Custom search filtering
+            $('#searchInput').on('keyup', function() {
+                dataTable.search($(this).val());
+            });
+            
+            // Initialize popovers for features list
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            popoverTriggerList.forEach(popoverTriggerEl => {
+                new bootstrap.Popover(popoverTriggerEl, {
+                    container: 'body',
+                    trigger: 'click',
+                    title: 'Features',
+                    html: true,
+                    placement: 'auto'
+                });
+            });
+            
+            // Close popover when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('[data-bs-toggle="popover"]') && 
+                    !e.target.closest('.popover')) {
+                    popoverTriggerList.forEach(popover => {
+                        const bsPopover = bootstrap.Popover.getInstance(popover);
+                        if (bsPopover) {
+                            bsPopover.hide();
+                        }
+                    });
+                }
+            });
+            
+            // Delete confirmation
+            $('.delete-btn').on('click', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                
+                $('#categoryName').text(name);
+                $('#confirmDelete').attr('href', '@Url.Action("Delete")?id=' + id);
+            });
+            
+            // Show toast messages if provided via TempData
+            @if (TempData["success"] != null)
+            {
+                <text>
+                showToast('Success', '@TempData["success"]', 'success');
+                </text>
+            }
+            
+            @if (TempData["error"] != null)
+            {
+                <text>
+                showToast('Error', '@TempData["error"]', 'danger');
+                </text>
+            }
+            
+            // Toast function
+            function showToast(title, message, type) {
+                const toastContainer = document.createElement('div');
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1080';
+                
+                const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+                
+                toastContainer.innerHTML = `
+                    <div class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}:</strong> ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(toastContainer);
+                
+                const toastElement = toastContainer.querySelector('.toast');
+                const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+                toast.show();
+                
+                toastElement.addEventListener('hidden.bs.toast', function() {
+                    document.body.removeChild(toastContainer);
+                });
+            }
+        });
+    </script>
+}
+
+@functions {
+    int GetBusinessCount(int categoryId)
+    {
+        // This should be implemented to get the actual count
+        // In a real implementation, you would pass this data from controller or use a service
+        Random rnd = new Random();
+        return rnd.Next(0, 30);
+    }
+}

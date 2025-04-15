@@ -1,0 +1,175 @@
+﻿@model UpdatePackageVM
+@{
+    ViewData["Title"] = "Edit Package";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title">
+    <h1>Edit Package</h1>
+    <p>Update subscription package details</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Package Information</h5>
+                    <a href="@Url.Action("GetAll")" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Packages
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <form asp-action="SaveUpdate" asp-route-id="@Model.Id" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="package-badge @GetPackageBadgeClass(Model.Id)">
+                                Package ID: @Model.Id
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Package Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control form-control-lg" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="MonthlyPrice" class="form-label">Monthly Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="MonthlyPrice" class="form-control" type="number" step="0.01" min="0" />
+                            </div>
+                            <span asp-validation-for="MonthlyPrice" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="YearlyPrice" class="form-label">Yearly Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="YearlyPrice" class="form-control" type="number" step="0.01" min="0" />
+                            </div>
+                            <span asp-validation-for="YearlyPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Package Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- Package Features (Read Only - For Display) -->
+                    <div class="mb-4">
+                        <h6 class="text-uppercase fw-bold text-muted mb-3">Package Features</h6>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Package features can be managed from the package details page.
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Changes
+                        </button>
+                        <a href="@Url.Action("GetAll")" class="btn btn-secondary ms-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="card-footer bg-light">
+                <div class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Changes to package details will affect all businesses using this package.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+        }
+        
+        .package-badge {
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .package-badge.badge-regular {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+        
+        .package-badge.badge-premium {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+        
+        .package-badge.badge-enterprise {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .form-control-lg {
+            font-size: 1.1rem;
+        }
+        
+        .input-group-text {
+            font-weight: 500;
+        }
+        
+        .text-uppercase {
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Calculate yearly savings display
+            $('#MonthlyPrice, #YearlyPrice').on('input', function() {
+                const monthlyPrice = parseFloat($('#MonthlyPrice').val()) || 0;
+                const yearlyPrice = parseFloat($('#YearlyPrice').val()) || 0;
+                const yearlyCost = monthlyPrice * 12;
+                const savings = yearlyCost - yearlyPrice;
+                
+                if (savings > 0) {
+                    $('#savings').text(`Save $${savings.toFixed(2)} per year`);
+                    $('#savingsContainer').removeClass('d-none');
+                } else {
+                    $('#savingsContainer').addClass('d-none');
+                }
+            });
+            
+            // Trigger initial calculation
+            $('#MonthlyPrice').trigger('input');
+        });
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@functions {
+    string GetPackageBadgeClass(int packageId)
+    {
+        return packageId switch
+        {
+            1 => "badge-regular",
+            2 => "badge-premium",
+            3 => "badge-enterprise",
+            _ => "badge-regular"
+        };
+    }
+}

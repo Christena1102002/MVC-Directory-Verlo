@@ -1,0 +1,99 @@
+@model mvc.ViewModels.RoleFormViewModel
+@{
+    ViewData["Title"] = "Create New Role";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title">
+    <h1>Create New Role</h1>
+    <p class="text-muted">Add a new role to the system</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Role Details</h5>
+                    <a href="@Url.Action("Index")" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="RoleName" class="form-label">Role Name <span class="text-danger">*</span></label>
+                        <input asp-for="RoleName" class="form-control" placeholder="Enter role name" />
+                        <span asp-validation-for="RoleName" class="text-danger"></span>
+                        <div class="form-text">The unique name for this role. Used for role-based authorization.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Brief description of this role's responsibilities"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="@Url.Action("Index")" class="btn btn-light me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Create Role
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Role Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h6><i class="fas fa-info-circle text-info me-2"></i>What are Roles?</h6>
+                    <p class="text-muted">
+                        Roles are collections of permissions that grant access to specific parts of the application.
+                        Users can be assigned to one or more roles.
+                    </p>
+                </div>
+                
+                <div class="mb-4">
+                    <h6><i class="fas fa-lightbulb text-warning me-2"></i>Best Practices</h6>
+                    <ul class="text-muted small">
+                        <li>Use descriptive role names that reflect their purpose</li>
+                        <li>Limit roles to specific responsibilities</li>
+                        <li>Follow the principle of least privilege</li>
+                        <li>Regularly review role assignments</li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-light">
+                    <i class="fas fa-shield-alt me-2 text-primary"></i>
+                    <strong>Default System Roles:</strong>
+                    <ul class="small mb-0 mt-2">
+                        <li><strong>Admin</strong> - Full system access and management</li>
+                        <li><strong>User</strong> - Standard user permissions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Automatically format role name to capitalize first letter
+        document.getElementById('RoleName').addEventListener('input', function(e) {
+            if (this.value.length > 0) {
+                this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+            }
+        });
+    </script>
+}

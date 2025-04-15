@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --primary-hover: #2563EB;
+            --secondary-color: #10B981;
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --info-color: #3B82F6;
+            --light-color: #F3F4F6;
+            --dark-color: #1F2937;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 64px;
+            --transition-speed: 0.3s;
+            --border-color: rgba(0,0,0,0.08);
+            --card-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #F9FAFB;
+            color: #374151;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            transition: all var(--transition-speed);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed);
+            max-width: calc(100% - var(--sidebar-width));
+        }
+
+        .sidebar-collapsed .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+            max-width: calc(100% - var(--sidebar-collapsed-width));
+        }
+
+        .admin-header {
+            height: var(--header-height);
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: var(--card-shadow);
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 1.5rem;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .admin-content {
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .page-title p {
+            color: var(--text-light);
+            margin: 0.5rem 0 0 0;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+            border: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background-color: transparent;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Table styles */
+        .admin-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .admin-table th {
+            background-color: #F9FAFB;
+            text-align: left;
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+            color: #4B5563;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-table td {
+            padding: 0.75rem 1.25rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover td {
+            background-color: #F9FAFB;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            height: 24px;
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-disabled {
+            background-color: rgba(156, 163, 175, 0.1);
+            color: #6B7280;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            padding-left: 0;
+            list-style: none;
+            border-radius: 0.25rem;
+        }
+
+        .page-link {
+            position: relative;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            margin-left: -1px;
+            line-height: 1.25;
+            color: var(--primary-color);
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+        }
+
+        .page-item.active .page-link {
+            z-index: 1;
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Form styles */
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Filtering controls */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #6B7280;
+        }
+
+        .search-input {
+            padding-left: 40px;
+        }
+
+        /* Mobile styles */
+        @@media (max-width: 1023px) {
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+            
+            .sidebar-collapsed .main-content {
+                margin-left: 0;
+                max-width: 100%;
+            }
+
+            .admin-header {
+                padding-left: 1rem;
+            }
+            
+            .mobile-sidebar-toggle {
+                display: block !important;
+                margin-right: 1rem;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                min-width: 100%;
+            }
+        }
+
+        /* Sidebar toggle button for mobile */
+        .mobile-sidebar-toggle {
+            background: none;
+            border: none;
+            color: #4B5563;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        @@media (max-width: 640px) {
+            .admin-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <div class="admin-container" id="adminContainer">
+        @await Html.PartialAsync("_Sidebar")
+        
+        <div class="main-content">
+            <div class="admin-header">
+                <button class="mobile-sidebar-toggle" id="mobileNavToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <div class="header-title">@ViewData["Title"]</div>
+
+                <div class="header-actions">
+                    <div class="notification-badge" id="chatNotification" title="Chat Messages">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                     
+                    </div>
+
+                    <div class="notification-badge" id="reviewNotification" title="New Reviews">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                     
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if sidebar is collapsed from local storage
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            
+            if (sidebarCollapsed) {
+                document.getElementById('adminContainer').classList.add('sidebar-collapsed');
+            }
+            
+            // Mobile sidebar toggle
+            document.getElementById('mobileNavToggle').addEventListener('click', function() {
+                const sidebar = document.getElementById('adminSidebar');
+                sidebar.classList.toggle('mobile-open');
+                const overlay = document.getElementById('sidebarOverlay');
+                overlay.classList.toggle('active');
+            });
+            
+            // Set active link based on current page
+            const currentUrl = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link[data-page]');
+            
+            navLinks.forEach(link => {
+                const page = link.getAttribute('data-page');
+                if (currentUrl.includes(page)) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Load notification counts via AJAX
+            loadNotificationCounts();
+        });
+        
+        function loadNotificationCounts() {
+            // Chat notifications count
+            fetch('/AdminChat/GetUnreadCount')
+                .then(response => response.json())
+                .then(data => {
+                    const chatBadge = document.getElementById('chatBadge');
+                    if (data > 0) {
+                        chatBadge.textContent = data > 99 ? '99+' : data;
+                        chatBadge.style.display = 'flex';
+                    } else {
+                        chatBadge.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error fetching chat count:', error));
+            
+            // Review notifications count
+            fetch('/Review/GetUnreadReviewsCount')
+                .then(response => response.json())
+                .then(data => {
+                    const reviewBadge = document.getElementById('reviewBadge');
+                    if (data > 0) {
+                        reviewBadge.textContent = data > 99 ? '99+' : data;
+                        reviewBadge.style.display = 'flex';
+                    } else {
+                        reviewBadge.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error fetching review count:', error));
+        }
+    </script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

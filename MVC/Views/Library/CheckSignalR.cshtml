@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Check SignalR Library";
+}
+
+<div class="container py-5">
+    <h1 class="mb-4">SignalR Library Status</h1>
+    
+    @if (ViewBag.SignalRExists)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i> <strong>Success!</strong> SignalR library is correctly installed at the specified location.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> <strong>Error!</strong> SignalR library is missing from the expected location.
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">How to Fix</h5>
+            </div>
+            <div class="card-body">
+                <p>You need to restore client-side libraries. Run the following commands in your project directory:</p>
+                <pre class="bg-light p-3"><code>@ViewBag.RestoreCommand</code></pre>
+                
+                <p>If that doesn't work, ensure you have libman.json in your project root with the following content:</p>
+                <pre class="bg-light p-3"><code>{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "@@microsoft/signalr@latest",
+      "destination": "wwwroot/lib/signalr/",
+      "files": [
+        "dist/browser/signalr.js",
+        "dist/browser/signalr.min.js"
+      ]
+    }
+  ]
+}</code></pre>
+                
+                <p>The fallback CDN should be working temporarily, but it's better to fix the local library.</p>
+            </div>
+        </div>
+    }
+    
+    <div class="mt-4">
+        <h3>Path Information</h3>
+        <p>Expected SignalR library location: <code>@ViewBag.SignalRPath</code></p>
+    </div>
+    
+    <div class="mt-5">
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i> Back to Home
+        </a>
+    </div>
+</div>

@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Vyrlo</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="/css/main/variables.css">
+    <link rel="stylesheet" href="/css/main/reset.css">
+    <link rel="stylesheet" href="/css/main/utilities.css">
+    <link rel="stylesheet" href="/css/main/animations.css">
+    <link rel="stylesheet" href="/css/main/style.css">
+
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="/css/components/header.css">
+    <link rel="stylesheet" href="/css/components/footer.css">
+
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="/css/pages/auth.css">
+    <style>
+        .text-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 6px 10px;
+            border-radius: 5px;
+            margin-top: 6px;
+            font-size: 0.875rem;
+            display: block;
+        }
+
+            .text-danger:empty {
+                display: none;
+            }
+
+        .div-text-danger {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <main class="vr-main">
+        <div class="vr-auth">
+            <div class="vr-auth__container">
+                <div class="vr-auth__content">
+                    <div class="vr-auth__header">
+<h1>Index</h1>
+<p>User ID: @ViewBag.UserId</p>
+                        <!-- Notification Icon -->
+                        <a href="/Review/GetUnreadReviews" id="notificationContainer" style="position: relative; display: inline-block; cursor: pointer; text-decoration: none; color: inherit;">
+                            <i class="fa fa-bell" style="font-size: 24px;"></i>
+                            <span id="notificationCount" style="
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 12px;
+        display: none;
+    ">0</span>
+                        </a>
+
+
+
+
+                        <!-- Toast Container -->
+                        <div class="vr-toast-container" id="toastContainer"></div>
+                        <div class="vr-auth__footer">
+                       
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+                        <!-- Scripts -->
+
+</body>
+</html>
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+  
+    let notificationCount = 0;
+
+    // استدعاء عدد الريفيوهات الجديدة لما الصفحة تفتح
+    window.onload = function () {
+        fetch('/Review/GetUnreadReviewsCount')
+            .then(response => response.json())
+            .then(count => {
+                const countSpan = document.getElementById("notificationCount");
+                if (count > 0) {
+                    countSpan.innerText = count;
+                    countSpan.style.display = 'inline-block';
+                    notificationCount = count;
+                }
+            });
+    };
+
+    //1) declare hub that i want to open connect
+    var hub=new signalR.HubConnectionBuilder().withUrl("/reviewhub").build();
+    //2) start Connection
+    hub.start().then(
+        function()
+        {
+            console.log("hub connected success");
+        }
+
+
+    );
+    //3) server notification i want to handel
+
+    hub.on("NewReviewArrived", function(notification) {
+        console.log(notification);
+
+        // زود العداد
+        notificationCount++;
+
+        // حدث القيمة في الـ span
+        const countSpan = document.getElementById("notificationCount");
+        countSpan.innerText = notificationCount;
+
+        // خليه يظهر لو كان مخفي
+        countSpan.style.display = 'inline-block';
+    });
+      document.getElementById("notificationContainer").addEventListener("click", function () {
+        notificationCount = 0;
+        const countSpan = document.getElementById("notificationCount");
+        countSpan.innerText = notificationCount;
+        countSpan.style.display = 'none';
+
+        // هنا ممكن تبعتي request تخلي الريفيوهات كلها IsRead = true
+    });
+
+
+
+
+</script>

@@ -1,0 +1,271 @@
+﻿@model IEnumerable<mvc.Models.Package>
+@{
+    ViewData["Title"] = "Packages Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title">
+    <h1>Packages Management</h1>
+    <p>Manage subscription packages for businesses</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-end">
+            <a href="@Url.Action("Add", "Package")" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Create New Package
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var package in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 package-card">
+                <div class="card-header bg-@GetPackageColor(package.Id)">
+                    <h5 class="card-title text-white mb-0">@package.Name</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        <div class="pricing">
+                            <span class="currency">$</span>
+                            <span class="amount">@package.MonthlyPrice</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="yearly-price text-center mb-4">
+                        <span class="badge bg-@GetPackageColor(package.Id) bg-opacity-10 text-@GetPackageColor(package.Id)">
+                            $@package.YearlyPrice yearly (save @(((package.MonthlyPrice * 12) - package.YearlyPrice).ToString("0.##"))$)
+                        </span>
+                    </div>
+                    <p class="text-muted text-center mb-4">@package.Description</p>
+                    <ul class="feature-list">
+                        @foreach (var feature in package.Features)
+                        {
+                            <li class="@(feature.IsIncluded ? "" : "text-muted")">
+                                @if (feature.IsIncluded)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success me-2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted me-2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                }
+                                @feature.Description
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Edit", "Package", new { id = package.Id })" class="btn btn-sm btn-outline-primary">
+                            Edit
+                        </a>
+                        <div class="badge bg-@GetPackageColor(package.Id)">
+                            @GetBusinessCount(package.Id) Businesses
+                        </div>
+                        @if (CanDeletePackage(package.Id))
+                        {
+                            <button class="btn btn-sm btn-outline-danger delete-package" data-id="@package.Id" data-name="@package.Name">
+                                Delete
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deletePackageModal" tabindex="-1" aria-labelledby="deletePackageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePackageModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the <span id="packageName" class="fw-bold"></span> package?
+                <p class="text-danger mt-2">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDeletePackage" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .pricing {
+            text-align: center;
+        }
+        
+        .currency {
+            font-size: 1.5rem;
+            font-weight: 500;
+            vertical-align: super;
+        }
+        
+        .amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .period {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .feature-list li svg {
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        
+        .package-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .bg-regular {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+        
+        .text-regular {
+            color: #3B82F6;
+        }
+        
+        .bg-premium {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+        
+        .text-premium {
+            color: #F59E0B;
+        }
+        
+        .bg-enterprise {
+            background: linear-gradient(135deg, #10B981, #059669);
+        }
+        
+        .text-enterprise {
+            color: #10B981;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Delete package modal
+            $('.delete-package').on('click', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                $('#packageName').text(name);
+                $('#confirmDeletePackage').attr('href', '@Url.Action("Delete", "Package")/' + id);
+                $('#deletePackageModal').modal('show');
+            });
+            
+            // Show success message if exists
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                    showToast('Success', '@TempData["Success"]', 'success');
+                </text>
+            }
+            
+            // Show error message if exists
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                    showToast('Error', '@TempData["Error"]', 'danger');
+                </text>
+            }
+        });
+        
+        // Toast notification function
+        function showToast(title, message, type) {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = 1080;
+            
+            const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+            
+            toastContainer.innerHTML = `
+                <div class="toast align-items-center text-white ${bgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}:</strong> ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toastContainer);
+            
+            const toastElement = toastContainer.querySelector('.toast');
+            const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            toast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    </script>
+}
+
+@functions {
+    string GetPackageColor(int packageId)
+    {
+        return packageId switch
+        {
+            1 => "regular",
+            2 => "premium",
+            3 => "enterprise",
+            _ => "primary"
+        };
+    }
+    
+    int GetBusinessCount(int packageId)
+    {
+        // This is a placeholder. In real implementation,
+        // you might want to pass this data from the controller
+        Random rnd = new Random();
+        return rnd.Next(10, 100);
+    }
+    
+    bool CanDeletePackage(int packageId)
+    {
+        // Don't allow deletion of the default package (Regular)
+        return packageId != 1;
+    }
+}

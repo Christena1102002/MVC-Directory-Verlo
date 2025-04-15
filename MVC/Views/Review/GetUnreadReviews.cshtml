@@ -1,0 +1,319 @@
+﻿@model IEnumerable<Review>
+@{
+    ViewData["Title"] = "Unread Reviews";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-title d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Unread Reviews</h1>
+        <p>Manage and respond to new reviews from users</p>
+    </div>
+    <button id="markAllAsRead" class="btn btn-outline-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Mark All as Read
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Reviews List</h5>
+        <div class="d-flex gap-2">
+            <div class="search-box">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search reviews...">
+            </div>
+            <select id="ratingFilter" class="form-select" style="width: 150px;">
+                <option value="">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="text-center p-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-muted mb-4">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+                <h4>No Unread Reviews</h4>
+                <p class="text-muted">All reviews have been marked as read.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="admin-table" id="reviewsTable">
+                    <thead>
+                        <tr>
+                            <th>Business</th>
+                            <th>Reviewer</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var review in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="@Url.Action("GetBusinessById", "Business", new { id = review.BusinessId })" class="text-decoration-none fw-medium">
+                                        @(review.Business?.Name ?? $"Business #{review.BusinessId}")
+                                    </a>
+                                </td>
+                                <td>@review.Email</td>
+                                <td>
+                                    <div class="rating-stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="@(i <= review.Rating ? "currentColor" : "none")" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="@(i <= review.Rating ? "text-warning" : "text-muted")">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="review-comment">@review.Comment</td>
+                                <td>@review.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary mark-read-btn" data-id="@review.Id">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                        </button>
+                                        <a href="@Url.Action("GetBusinessById", "Business", new { id = review.BusinessId })" class="btn btn-sm btn-outline-info">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="@review.Id">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 6h18"></path>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this review?
+                <p class="text-danger mt-2">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .review-comment {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            const dataTable = new simpleDatatables.DataTable("#reviewsTable", {
+                searchable: true,
+                fixedHeight: true,
+                perPage: 10,
+                columns: [
+                    { select: 5, sortable: false }
+                ],
+                labels: {
+                    placeholder: "Search...",
+                    perPage: "{select} entries per page",
+                    noRows: "No reviews found",
+                    info: "Showing {start} to {end} of {rows} entries"
+                }
+            });
+            
+            // Handle search input
+            $('#searchInput').on('keyup', function() {
+                dataTable.search($(this).val());
+            });
+            
+            // Handle rating filter
+            $('#ratingFilter').on('change', function() {
+                const value = $(this).val();
+                dataTable.columns().search(2, value);
+            });
+            
+            // Mark as read button
+            $('.mark-read-btn').on('click', function() {
+                const id = $(this).data('id');
+                const row = $(this).closest('tr');
+                
+                $.ajax({
+                    url: '@Url.Action("MarkAsRead", "Review")',
+                    type: 'POST',
+                    data: JSON.stringify({ id: id }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the row with animation
+                            row.fadeOut(400, function() {
+                                dataTable.rows().remove(row.index());
+                                
+                                // Check if there are no more rows
+                                if (dataTable.data.data.length === 0) {
+                                    location.reload(); // Reload to show the empty state
+                                }
+                                
+                                // Update badge count in header
+                                updateBadgeCount();
+                            });
+                            
+                            showToast('Success', 'Review marked as read', 'success');
+                        } else {
+                            showToast('Error', response.message, 'danger');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to mark review as read', 'danger');
+                    }
+                });
+            });
+            
+            // Mark all as read button
+            $('#markAllAsRead').on('click', function() {
+                const button = $(this);
+                button.prop('disabled', true);
+                
+                $.ajax({
+                    url: '@Url.Action("MarkAllAsRead", "Review")',
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload(); // Reload to show the empty state
+                        } else {
+                            showToast('Error', response.message, 'danger');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to mark all reviews as read', 'danger');
+                    },
+                    complete: function() {
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Delete button
+            $('.delete-btn').on('click', function() {
+                const id = $(this).data('id');
+                $('#confirmDeleteBtn').data('id', id);
+                $('#deleteModal').modal('show');
+            });
+            
+            // Confirm delete button
+            $('#confirmDeleteBtn').on('click', function() {
+                const id = $(this).data('id');
+                const row = $(`.delete-btn[data-id="${id}"]`).closest('tr');
+                
+                $.ajax({
+                    url: '@Url.Action("Delete", "Review")',
+                    type: 'POST',
+                    data: JSON.stringify({ id: id }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the row with animation
+                            row.fadeOut(400, function() {
+                                dataTable.rows().remove(row.index());
+                                
+                                // Check if there are no more rows
+                                if (dataTable.data.data.length === 0) {
+                                    location.reload(); // Reload to show the empty state
+                                }
+                                
+                                // Update badge count in header
+                                updateBadgeCount();
+                            });
+                            
+                            showToast('Success', 'Review deleted', 'success');
+                        } else {
+                            showToast('Error', response.message, 'danger');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to delete review', 'danger');
+                    },
+                    complete: function() {
+                        $('#deleteModal').modal('hide');
+                    }
+                });
+            });
+            
+            // Update badge count in header
+            function updateBadgeCount() {
+                const count = dataTable.data.data.length;
+                $('#unreadReviewsBadge').text(count);
+            }
+            
+            // Show toast notification
+            function showToast(title, message, type) {
+                const toast = $(`
+                    <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}</strong> ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `);
+                
+                $('#toastContainer').append(toast);
+                toast.toast('show');
+                
+                setTimeout(function() {
+                    toast.toast('dispose');
+                }, 5000);
+            }
+        });
+    </script>
+}

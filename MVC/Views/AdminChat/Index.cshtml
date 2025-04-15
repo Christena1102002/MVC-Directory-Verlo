@@ -1,0 +1,582 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Support Center - Admin Panel";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-4 col-lg-3">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="card-title mb-0 d-flex align-items-center">
+                        <i class="fas fa-users me-2"></i>
+                        <span>Conversations</span>
+                        <span class="badge bg-danger ms-2 d-none" id="totalUnreadBadge">0</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" id="conversationsList">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-primary" id="refreshConversationsBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" id="showAllBtn">All</button>
+                            <button type="button" class="btn btn-outline-secondary" id="showUnreadBtn">Unread</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 col-lg-9">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0" id="conversationTitle">
+                            <i class="fas fa-comments me-2"></i>Support Center
+                        </h5>
+                        <div>
+                            <span class="badge bg-success me-2" id="userStatus">Offline</span>
+                            <button class="btn btn-sm btn-outline-danger d-none" id="closeConversationBtn">
+                                <i class="fas fa-times"></i> Close Conversation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="conversationContainer" class="d-flex flex-column" style="height: 600px;">
+                        <div id="messagesContainer" class="flex-grow-1 p-3 overflow-auto">
+                            <div class="text-center py-5">
+                                <i class="fas fa-headset text-muted mb-3" style="font-size: 4rem;"></i>
+                                <h4>Support Center</h4>
+                                <p class="text-muted">Select a conversation from the list to respond to user inquiries</p>
+                            </div>
+                        </div>
+                        <div id="messageInputContainer" class="p-3 border-top d-none">
+                            <form id="messageForm" class="d-flex">
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-reply-all"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item quick-reply" href="#">Welcome to our support center. How can I help you today?</a></li>
+                                        <li><a class="dropdown-item quick-reply" href="#">Thank you for contacting us!</a></li>
+                                        <li><a class="dropdown-item quick-reply" href="#">Your issue will be resolved as soon as possible.</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item quick-reply" href="#">Please provide more details about the issue.</a></li>
+                                    </ul>
+                                    <input type="text" id="messageInput" class="form-control" placeholder="Type your message here..." required>
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-paper-plane"></i> Send
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .admin-message {
+            align-self: flex-end;
+            background-color: #e3f2fd;
+            border-radius: 18px 18px 0 18px;
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .user-message {
+            align-self: flex-start;
+            background-color: #f1f0f0;
+            border-radius: 18px 18px 18px 0;
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        .conversation-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .conversation-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .conversation-item.active {
+            background-color: #e9f2ff;
+            border-right: 4px solid var(--primary-color);
+        }
+        
+        .conversation-badge {
+            font-size: 0.7rem;
+            padding: 0.25em 0.6em;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .last-message {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        #messagesContainer {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .user-status.online {
+            background-color: #28a745;
+        }
+        
+        .user-status.offline {
+            background-color: #dc3545;
+        }
+        
+        .unread-marker {
+            width: 8px;
+            height: 8px;
+            background-color: #dc3545;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+      
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .withAutomaticReconnect()
+            .build();
+        
+       
+        let currentConversationId = null;
+        let conversations = [];
+        let filterType = 'all'; 
+        
+       
+        connection.start()
+            .then(() => {
+                console.log("SignalR Connected");
+                loadAdminConversations();
+                
+                
+                setInterval(loadAdminConversations, 60000);
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+        
+      
+        async function loadAdminConversations() {
+            try {
+                conversations = await connection.invoke("GetAdminConversations");
+                renderConversationsList(conversations);
+                updateTotalUnreadBadge();
+            } catch (err) {
+                console.error("Error loading conversations: ", err);
+                showErrorMessage("An error occurred while loading conversations");
+            }
+        }
+        
+       
+        function renderConversationsList(conversations) {
+            const container = document.getElementById("conversationsList");
+            container.innerHTML = "";
+            
+            let filteredConversations = conversations;
+            if (filterType === 'unread') {
+                filteredConversations = conversations.filter(c => c.unreadCount > 0);
+            }
+            
+            if (filteredConversations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-0">No ${filterType === 'unread' ? 'unread ' : ''}conversations found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+           
+            filteredConversations.sort((a, b) => {
+               
+                if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+                if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+                
+               
+                return new Date(b.lastMessageAt) - new Date(a.lastMessageAt);
+            });
+            
+            filteredConversations.forEach(conv => {
+                const item = document.createElement("a");
+                item.href = "#";
+                item.className = `conversation-item list-group-item list-group-item-action ${currentConversationId === conv.id ? 'active' : ''}`;
+                item.dataset.id = conv.id;
+                
+                const timeAgo = getTimeAgo(new Date(conv.lastMessageAt));
+                
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center">
+                            ${conv.unreadCount > 0 ? '<span class="unread-marker"></span>' : ''}
+                            <div>
+                                <div class="d-flex align-items-center">
+                                    <span class="user-name">${escapeHtml(conv.userName)}</span>
+                                </div>
+                                <div class="last-message text-muted mt-1">${escapeHtml(conv.lastMessage || 'New conversation')}</div>
+                                <small class="text-muted">${timeAgo}</small>
+                            </div>
+                        </div>
+                        ${conv.unreadCount > 0 ? `
+                            <span class="badge bg-danger conversation-badge">${conv.unreadCount}</span>
+                        ` : ''}
+                    </div>
+                `;
+                
+                item.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    selectConversation(conv.id);
+                });
+                
+                container.appendChild(item);
+            });
+        }
+        
+        
+        function updateTotalUnreadBadge() {
+            const totalUnread = conversations.reduce((total, conv) => total + conv.unreadCount, 0);
+            const badge = document.getElementById('totalUnreadBadge');
+            
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+        }
+        
+       
+        function selectConversation(conversationId) {
+            currentConversationId = conversationId;
+            
+           
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.id == conversationId);
+            });
+            
+          
+            const conversation = conversations.find(c => c.id == conversationId);
+            if (conversation) {
+                document.getElementById('conversationTitle').innerHTML = `
+                    <i class="fas fa-user me-2"></i>${escapeHtml(conversation.userName)}
+                `;
+                
+               
+                document.getElementById('closeConversationBtn').classList.remove('d-none');
+            }
+            
+           
+            document.getElementById('messageInputContainer').classList.remove('d-none');
+            
+           
+            loadConversationMessages(conversationId);
+        }
+        
+       
+        async function loadConversationMessages(conversationId) {
+            try {
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                `;
+                
+                const messages = await connection.invoke("GetConversationMessages", conversationId);
+                renderMessages(messages);
+                
+              
+                loadAdminConversations();
+                
+            } catch (err) {
+                console.error("Error loading messages: ", err);
+                showErrorMessage("An error occurred while loading messages");
+            }
+        }
+        
+        
+        function renderMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = "";
+            
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-muted">No messages yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const conversation = conversations.find(c => c.id == currentConversationId);
+            const userId = conversation ? conversation.userId : null;
+            
+            messages.forEach(msg => {
+                const isAdmin = msg.senderId !== userId;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isAdmin ? 'admin-message' : 'user-message';
+                
+                const time = new Date(msg.sentAt).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                messageDiv.innerHTML = `
+                    <div>${escapeHtml(msg.content)}</div>
+                    <div class="message-time d-flex ${isAdmin ? 'justify-content-end' : 'justify-content-start'}">
+                        ${time}
+                        ${!isAdmin && msg.isRead ? `
+                            <span class="ms-1">
+                                <i class="fas fa-check-double text-primary"></i>
+                            </span>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+            
+         
+            container.scrollTop = container.scrollHeight;
+        }
+        
+      
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentConversationId) return;
+            
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            messageInput.value = '';
+            
+            try {
+              
+                addTemporaryMessage(message);
+                
+               
+                await connection.invoke("SendReply", currentConversationId, message);
+                
+               
+                loadConversationMessages(currentConversationId);
+                
+            } catch (err) {
+                console.error("Error sending message: ", err);
+                showErrorMessage("An error occurred while sending the message");
+            }
+        });
+        
+      
+        function addTemporaryMessage(content) {
+            const container = document.getElementById('messagesContainer');
+            
+           
+            const emptyMessage = container.querySelector('.text-center.py-4');
+            if (emptyMessage) {
+                container.innerHTML = "";
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'admin-message';
+            
+            const time = new Date().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            messageDiv.innerHTML = `
+                <div>${escapeHtml(content)}</div>
+                <div class="message-time d-flex justify-content-end">
+                    ${time}
+                    <span class="ms-1">
+                        <i class="fas fa-clock text-muted"></i>
+                    </span>
+                </div>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        
+        connection.on("ReceiveAdminMessage", function(data) {
+           
+            loadAdminConversations();
+            
+           
+            showToast(`New message from ${data.senderName}`, data.message);
+        });
+        
+       
+        connection.on("UpdateAdminConversation", function(data) {
+           
+            loadAdminConversations();
+            
+           
+            if (currentConversationId && currentConversationId == data.conversationId) {
+                loadConversationMessages(currentConversationId);
+            }
+        });
+        
+       
+        document.querySelectorAll('.quick-reply').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.getElementById('messageInput').value = e.target.textContent;
+                document.getElementById('messageInput').focus();
+            });
+        });
+        
+
+        document.getElementById('showAllBtn').addEventListener('click', function() {
+            filterType = 'all';
+            this.classList.add('active');
+            document.getElementById('showUnreadBtn').classList.remove('active');
+            renderConversationsList(conversations);
+        });
+        
+        document.getElementById('showUnreadBtn').addEventListener('click', function() {
+            filterType = 'unread';
+            this.classList.add('active');
+            document.getElementById('showAllBtn').classList.remove('active');
+            renderConversationsList(conversations);
+        });
+        
+        
+        document.getElementById('refreshConversationsBtn').addEventListener('click', loadAdminConversations);
+        
+       
+        document.getElementById('closeConversationBtn').addEventListener('click', function() {
+          
+            document.getElementById('messagesContainer').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-headset text-muted mb-3" style="font-size: 4rem;"></i>
+                    <h4>Support Center</h4>
+                    <p class="text-muted">Select a conversation from the list to respond to user inquiries</p>
+                </div>
+            `;
+            
+            document.getElementById('conversationTitle').innerHTML = `
+                <i class="fas fa-comments me-2"></i>Support Center
+            `;
+            
+            document.getElementById('messageInputContainer').classList.add('d-none');
+            this.classList.add('d-none');
+            
+           
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            currentConversationId = null;
+        });
+        
+       
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+            
+            if (diffDay > 0) {
+                return `${diffDay} ${diffDay === 1 ? 'day' : 'days'} ago`;
+            } else if (diffHour > 0) {
+                return `${diffHour} ${diffHour === 1 ? 'hour' : 'hours'} ago`;
+            } else if (diffMin > 0) {
+                return `${diffMin} ${diffMin === 1 ? 'minute' : 'minutes'} ago`;
+            } else {
+                return 'Just now';
+            }
+        }
+        
+        function showErrorMessage(message) {
+            showToast("Error", message, "danger");
+        }
+        
+        function showToast(title, message, type = "primary") {
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '1060';
+            
+            toastContainer.innerHTML = `
+                <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <strong>${title}</strong>: ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toastContainer);
+            
+            const toastElement = toastContainer.querySelector('.toast');
+            const toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            toast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                document.body.removeChild(toastContainer);
+            });
+        }
+    </script>
+}

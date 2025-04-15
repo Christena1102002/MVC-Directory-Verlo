@@ -1,0 +1,512 @@
+﻿<style>
+    :root {
+        --sidebar-width: 260px;
+        --sidebar-collapsed-width: 70px;
+        --primary-color: #3B82F6;
+        --primary-hover: #2563EB;
+        --text-dark: #1E293B;
+        --text-light: #94A3B8;
+        --bg-light: #F8FAFC;
+        --bg-white: #FFFFFF;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --sidebar-transition: all 0.3s ease-in-out;
+    }
+
+    .admin-sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        background-color: var(--bg-white);
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-sm);
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 100;
+        transition: var(--sidebar-transition);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar-header {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        overflow: hidden;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        color: var(--primary-color);
+        flex-shrink: 0;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        white-space: nowrap;
+        transition: var(--sidebar-transition);
+    }
+
+    .collapsed .logo-text {
+        opacity: 0;
+    }
+
+    .toggle-sidebar-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--bg-light);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--sidebar-transition);
+    }
+
+    .toggle-sidebar-btn:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--primary-color);
+    }
+
+    .collapsed .toggle-sidebar-btn {
+        transform: rotate(180deg);
+    }
+
+    .sidebar-content {
+        padding: 1rem 0;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    .nav-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-light);
+        padding: 0.5rem 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .collapsed .nav-section-title {
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    .nav-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 0.375rem;
+        margin: 0 0.5rem;
+        transition: var(--sidebar-transition);
+        position: relative;
+    }
+
+    .collapsed .nav-link {
+        justify-content: center;
+        padding: 0.75rem;
+        margin: 0 0.25rem;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--primary-color);
+    }
+
+    .nav-link.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .nav-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .collapsed .nav-icon {
+        margin-right: 0;
+    }
+
+    .nav-text {
+        white-space: nowrap;
+        transition: var(--sidebar-transition);
+    }
+
+    .collapsed .nav-text {
+        opacity: 0;
+        width: 0;
+    }
+
+    .nav-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0 6px;
+        margin-left: auto;
+        transition: var(--sidebar-transition);
+    }
+
+    .collapsed .nav-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        transform: scale(0.8);
+    }
+
+    .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+    }
+
+    .collapsed .sidebar-footer {
+        padding: 1rem 0.5rem;
+        justify-content: center;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        overflow: hidden;
+        transition: var(--sidebar-transition);
+    }
+
+    .collapsed .user-info {
+        width: 0;
+        opacity: 0;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        white-space: nowrap;
+    }
+
+    .user-role {
+        color: var(--text-light);
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .tooltip {
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.25rem;
+        z-index: 1000;
+        font-size: 0.875rem;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    @@media (max-width: 1023px) {
+        .admin-sidebar {
+            transform: translateX(-100%);
+        }
+        
+        .admin-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            display: none;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+    }
+</style>
+
+<div class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198c.031-.028.062-.056.091-.086L12 5.43z" />
+            </svg>
+            <span class="logo-text">Admin Panel</span>
+        </div>
+        <button class="toggle-sidebar-btn" id="toggleSidebarBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="nav-section">
+            <h5 class="nav-section-title">Main</h5>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/Dashboard/Index" class="nav-link" data-tooltip="Dashboard">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h2.25a3 3 0 013 3v2.25a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm9.75 0a3 3 0 013-3H18a3 3 0 013 3v2.25a3 3 0 01-3 3h-2.25a3 3 0 01-3-3V6zM3 15.75a3 3 0 013-3h2.25a3 3 0 013 3V18a3 3 0 01-3 3H6a3 3 0 01-3-3v-2.25zm9.75 0a3 3 0 013-3H18a3 3 0 013 3V18a3 3 0 01-3 3h-2.25a3 3 0 01-3-3v-2.25z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5 class="nav-section-title">Management</h5>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/BusinessAdmin/Getall" class="nav-link" data-tooltip="Businesses">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M5.223 2.25c-.497 0-.974.198-1.325.55l-1.3 1.298A3.75 3.75 0 007.5 9.75c.627.47 1.406.75 2.25.75.844 0 1.624-.28 2.25-.75.626.47 1.406.75 2.25.75.844 0 1.623-.28 2.25-.75a3.75 3.75 0 004.902-5.652l-1.3-1.299a1.875 1.875 0 00-1.325-.549H5.223z" />
+                            <path fill-rule="evenodd" d="M3 20.25v-8.755c1.42.674 3.08.673 4.5 0A5.234 5.234 0 009.75 12c.804 0 1.568-.182 2.25-.506a5.234 5.234 0 002.25.506c.804 0 1.567-.182 2.25-.506 1.42.674 3.08.675 4.5.001v8.755h.75a.75.75 0 010 1.5H2.25a.75.75 0 010-1.5H3zm3-6a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v3a.75.75 0 01-.75.75h-3a.75.75 0 01-.75-.75v-3zm8.25-.75a.75.75 0 00-.75.75v5.25c0 .414.336.75.75.75h3a.75.75 0 00.75-.75v-5.25a.75.75 0 00-.75-.75h-3z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Businesses</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Package/GetAll" class="nav-link" data-tooltip="Packages">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.375 3a1.875 1.875 0 000 3.75h1.875v4.5H3.375A1.875 1.875 0 011.5 9.375v-.75c0-1.036.84-1.875 1.875-1.875h3.193A3.375 3.375 0 0112 2.753a3.375 3.375 0 015.432 3.997h3.943c1.035 0 1.875.84 1.875 1.875v.75c0 1.036-.84 1.875-1.875 1.875H12.75v-4.5h1.875a1.875 1.875 0 10-1.875-1.875V6.75h-1.5V4.875C11.25 3.839 10.41 3 9.375 3zM11.25 12.75H3v6.75a2.25 2.25 0 002.25 2.25h6v-9zM12.75 12.75v9h6.75a2.25 2.25 0 002.25-2.25v-6.75h-9z" />
+                        </svg>
+                        <span class="nav-text">Packages</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/CategoryAdmin/Index" class="nav-link" data-tooltip="Categories">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 00-3 3v4.318a3 3 0 00.879 2.121l9.58 9.581c.92.92 2.39.92 3.31 0l4.908-4.908a2.25 2.25 0 000-3.182l-9.58-9.58a3 3 0 00-2.121-.879H5.25zM6.375 7.5a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Categories</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5 class="nav-section-title">Communication</h5>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/AdminChat/Index" class="nav-link" data-tooltip="Chat">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Chat</span>
+                        <span class="nav-badge">3</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Review/GetUnreadReviews" class="nav-link" data-tooltip="Reviews">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Reviews</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h5 class="nav-section-title">System</h5>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/Admin/Role/Index" class="nav-link" data-tooltip="Roles">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
+                        </svg>
+                        <span class="nav-text">Roles</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/account/RegisterAdmin" class="nav-link" data-tooltip="Add Admin">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+                        </svg>
+                        <span class="nav-text">Add Admin</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Account/Logout" class="nav-link" data-tooltip="Logout">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="nav-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="user-profile">
+            <div class="user-avatar">
+                <span>AD</span>
+            </div>
+            <div class="user-info">
+                <div class="user-name">Admin</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('adminSidebar');
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        const overlay = document.getElementById('sidebarOverlay');
+        const tooltip = document.getElementById('tooltip');
+        const navLinks = document.querySelectorAll('.nav-link[data-tooltip]');
+        
+        // Check saved preference
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        
+        if (sidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+        }
+        
+        // Toggle sidebar
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+        
+        // Mobile sidebar toggle
+        function toggleMobileSidebar(show) {
+            if (show) {
+                sidebar.classList.add('mobile-open');
+                overlay.classList.add('active');
+            } else {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            }
+        }
+        
+        overlay.addEventListener('click', function() {
+            toggleMobileSidebar(false);
+        });
+        
+        // Create a media condition to check viewport width
+        const mediaQuery = window.matchMedia('(max-width: 1023px)');
+        
+        function handleViewportChange(e) {
+            if (e.matches) {
+                // Mobile view
+                sidebar.classList.remove('collapsed');
+                toggleMobileSidebar(false);
+            } else {
+                // Desktop view - restore previous state
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+                toggleMobileSidebar(true);
+            }
+        }
+        
+        // Run initially
+        handleViewportChange(mediaQuery);
+        
+        // Add listener for changes
+        mediaQuery.addEventListener('change', handleViewportChange);
+        
+        // Tooltips for collapsed sidebar
+        navLinks.forEach(link => {
+            link.addEventListener('mouseenter', function(e) {
+                if (!sidebar.classList.contains('collapsed')) return;
+                
+                const text = this.getAttribute('data-tooltip');
+                tooltip.textContent = text;
+                tooltip.style.opacity = '1';
+                
+                // Position tooltip next to link
+                const rect = this.getBoundingClientRect();
+                tooltip.style.top = `${rect.top + rect.height/2 - tooltip.offsetHeight/2}px`;
+                tooltip.style.left = `${rect.right + 8}px`;
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                tooltip.style.opacity = '0';
+            });
+        });
+        
+        // Set active link based on current page
+        const currentUrl = window.location.pathname;
+        navLinks.forEach(link => {
+            const linkUrl = link.getAttribute('href');
+            if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl) && linkUrl !== '/') {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
