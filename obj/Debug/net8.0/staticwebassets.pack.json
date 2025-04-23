@@ -1,0 +1,569 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\MVC.bundle.scp.css",
+      "PackagePath": "staticwebassets\\MVC.bi5hizwya5.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\business.css",
+      "PackagePath": "staticwebassets\\css\\business.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\alerts.css",
+      "PackagePath": "staticwebassets\\css\\components\\alerts.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\avatar.css",
+      "PackagePath": "staticwebassets\\css\\components\\avatar.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\buttons.css",
+      "PackagePath": "staticwebassets\\css\\components\\buttons.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\cards.css",
+      "PackagePath": "staticwebassets\\css\\components\\cards.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\checkout.css",
+      "PackagePath": "staticwebassets\\css\\components\\checkout.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\common.css",
+      "PackagePath": "staticwebassets\\css\\components\\common.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\dropdown.css",
+      "PackagePath": "staticwebassets\\css\\components\\dropdown.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\featured-card.css",
+      "PackagePath": "staticwebassets\\css\\components\\featured-card.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\featured-ribbon.css",
+      "PackagePath": "staticwebassets\\css\\components\\featured-ribbon.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\filter-tabs.css",
+      "PackagePath": "staticwebassets\\css\\components\\filter-tabs.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\footer.css",
+      "PackagePath": "staticwebassets\\css\\components\\footer.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\forms.css",
+      "PackagePath": "staticwebassets\\css\\components\\forms.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\header-transparent.css",
+      "PackagePath": "staticwebassets\\css\\components\\header-transparent.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\header.css",
+      "PackagePath": "staticwebassets\\css\\components\\header.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\listing-cards.css",
+      "PackagePath": "staticwebassets\\css\\components\\listing-cards.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\listing-form.css",
+      "PackagePath": "staticwebassets\\css\\components\\listing-form.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\listings-grid.css",
+      "PackagePath": "staticwebassets\\css\\components\\listings-grid.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\listings-search.css",
+      "PackagePath": "staticwebassets\\css\\components\\listings-search.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\loaders.css",
+      "PackagePath": "staticwebassets\\css\\components\\loaders.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\modal.css",
+      "PackagePath": "staticwebassets\\css\\components\\modal.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\navbar.css",
+      "PackagePath": "staticwebassets\\css\\components\\navbar.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\premium-badge.css",
+      "PackagePath": "staticwebassets\\css\\components\\premium-badge.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\profile-listings.css",
+      "PackagePath": "staticwebassets\\css\\components\\profile-listings.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\profile-nav.css",
+      "PackagePath": "staticwebassets\\css\\components\\profile-nav.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\profile-promo.css",
+      "PackagePath": "staticwebassets\\css\\components\\profile-promo.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\select.css",
+      "PackagePath": "staticwebassets\\css\\components\\select.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\skeleton.css",
+      "PackagePath": "staticwebassets\\css\\components\\skeleton.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\toast.css",
+      "PackagePath": "staticwebassets\\css\\components\\toast.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\components\\validation.css",
+      "PackagePath": "staticwebassets\\css\\components\\validation.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\fullwidth-sections.css",
+      "PackagePath": "staticwebassets\\css\\fullwidth-sections.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\layout\\container.css",
+      "PackagePath": "staticwebassets\\css\\layout\\container.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\layout\\flex.css",
+      "PackagePath": "staticwebassets\\css\\layout\\flex.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\layout\\grid.css",
+      "PackagePath": "staticwebassets\\css\\layout\\grid.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main.css",
+      "PackagePath": "staticwebassets\\css\\main.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main\\animations.css",
+      "PackagePath": "staticwebassets\\css\\main\\animations.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main\\reset.css",
+      "PackagePath": "staticwebassets\\css\\main\\reset.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main\\style.css",
+      "PackagePath": "staticwebassets\\css\\main\\style.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main\\utilities.css",
+      "PackagePath": "staticwebassets\\css\\main\\utilities.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\main\\variables.css",
+      "PackagePath": "staticwebassets\\css\\main\\variables.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\notifications.css",
+      "PackagePath": "staticwebassets\\css\\notifications.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\about.css",
+      "PackagePath": "staticwebassets\\css\\pages\\about.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\auth.css",
+      "PackagePath": "staticwebassets\\css\\pages\\auth.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\contact.css",
+      "PackagePath": "staticwebassets\\css\\pages\\contact.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\home.css",
+      "PackagePath": "staticwebassets\\css\\pages\\home.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\listing-details.css",
+      "PackagePath": "staticwebassets\\css\\pages\\listing-details.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\listings.css",
+      "PackagePath": "staticwebassets\\css\\pages\\listings.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\pages\\profile.css",
+      "PackagePath": "staticwebassets\\css\\pages\\profile.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\css\\themes\\featured-themes.css",
+      "PackagePath": "staticwebassets\\css\\themes\\featured-themes.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\background\\hero-bg.jpg",
+      "PackagePath": "staticwebassets\\images\\background\\hero-bg.jpg"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\backgrounds\\search-bg.jpg",
+      "PackagePath": "staticwebassets\\images\\backgrounds\\search-bg.jpg"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\decorations\\pattern.svg",
+      "PackagePath": "staticwebassets\\images\\decorations\\pattern.svg"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\defaults\\default-avatar.png",
+      "PackagePath": "staticwebassets\\images\\defaults\\default-avatar.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\defaults\\default-category.png",
+      "PackagePath": "staticwebassets\\images\\defaults\\default-category.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\defaults\\default-listing.jpg",
+      "PackagePath": "staticwebassets\\images\\defaults\\default-listing.jpg"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\empty-listings.png",
+      "PackagePath": "staticwebassets\\images\\empty-listings.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\icons\\categories\\dentist.png",
+      "PackagePath": "staticwebassets\\images\\icons\\categories\\dentist.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\icons\\categories\\home-services.png",
+      "PackagePath": "staticwebassets\\images\\icons\\categories\\home-services.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\icons\\categories\\restaurant.png",
+      "PackagePath": "staticwebassets\\images\\icons\\categories\\restaurant.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\logo\\favicon.png",
+      "PackagePath": "staticwebassets\\images\\logo\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\logo\\logo-white.png",
+      "PackagePath": "staticwebassets\\images\\logo\\logo-white.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\logo\\logo.png",
+      "PackagePath": "staticwebassets\\images\\logo\\logo.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\map-fallback-tile.png",
+      "PackagePath": "staticwebassets\\images\\map-fallback-tile.png"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\images\\patterns\\pattern-dots.svg",
+      "PackagePath": "staticwebassets\\images\\patterns\\pattern-dots.svg"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\business-filters-debug.js",
+      "PackagePath": "staticwebassets\\js\\business-filters-debug.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\chat-notifications.js",
+      "PackagePath": "staticwebassets\\js\\chat-notifications.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\myBusiness.js",
+      "PackagePath": "staticwebassets\\js\\myBusiness.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\notifications.js",
+      "PackagePath": "staticwebassets\\js\\notifications.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\offline-handler.js",
+      "PackagePath": "staticwebassets\\js\\offline-handler.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\review-hub.js",
+      "PackagePath": "staticwebassets\\js\\review-hub.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\signalr-cdn.js",
+      "PackagePath": "staticwebassets\\js\\signalr-cdn.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\signalr-fallback.js",
+      "PackagePath": "staticwebassets\\js\\signalr-fallback.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\js\\site.js",
+      "PackagePath": "staticwebassets\\js\\site.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "PackagePath": "staticwebassets\\lib\\bootstrap"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\lib\\signalr\\dist\\browser\\check.txt",
+      "PackagePath": "staticwebassets\\lib\\signalr\\dist\\browser\\check.txt"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\offline.html",
+      "PackagePath": "staticwebassets\\offline.html"
+    },
+    {
+      "Id": "C:\\Users\\HP\\Desktop\\NewFolder (2)\\MVC-Directory-Verlo\\wwwroot\\service-worker.js",
+      "PackagePath": "staticwebassets\\service-worker.js"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.MVC.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.MVC.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.MVC.props",
+      "PackagePath": "build\\MVC.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.MVC.props",
+      "PackagePath": "buildMultiTargeting\\MVC.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.MVC.props",
+      "PackagePath": "buildTransitive\\MVC.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
